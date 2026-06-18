@@ -93,7 +93,7 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-gray-700 font-bold mb-2">نوع الاشتراك</label>
-                            <select id="reg-type" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                            <select id="reg-type" onchange="updatePackageOptions('reg-type', 'reg-package')" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
                                 <option value="monthly">شهري</option>
                                 <option value="yearly">سنوي</option>
                             </select>
@@ -214,7 +214,6 @@
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // Firebase Configuration Handler
-        // We use the provided config, but adapt the collection paths to ensure compatibility.
         const userProvidedConfig = {
             apiKey: "AIzaSyBC1BB2MCOM1hr8MU734tr0V-E9pmE5IBg",
             authDomain: "waqfdata-d4a01.firebaseapp.com",
@@ -235,18 +234,17 @@
         const isCanvasEnv = typeof __app_id !== 'undefined';
         const canvasAppId = isCanvasEnv ? __app_id : 'default-app';
         
-        // Always return safe paths that won't break Canvas rules, or use root paths if hosted independently
         const getColPath = (colName) => {
             if (isCanvasEnv) {
                 return `artifacts/${canvasAppId}/public/data/${colName}`;
             }
-            return colName; // Example: 'volunteers', 'news' in user's actual database
+            return colName;
         };
 
         // --- State Management ---
         let state = {
             view: 'home',
-            user: null, // role: 'admin' | 'user', ...userData
+            user: null, 
             volunteers: [],
             news: [],
             projects: [],
@@ -302,10 +300,91 @@
 
         window.closeModal = () => el.modal.classList.add('hidden');
 
+        // تحديث الباقات بناءً على نوع الاشتراك (شهري / سنوي)
+        window.updatePackageOptions = (typeId, pkgId) => {
+            const type = document.getElementById(typeId).value;
+            const pkgSelect = document.getElementById(pkgId);
+            
+            const monthlyOptions = [1, 2, 3, 5, 10, 20, 50];
+            const yearlyOptions = [12, 20, 50, 100];
+            const options = type === 'monthly' ? monthlyOptions : yearlyOptions;
+            
+            pkgSelect.innerHTML = options.map(val => `<option value="${val}">${val} ريال</option>`).join('');
+        };
+
         const sendWhatsApp = (phone, message) => {
             const cleanPhone = phone.replace(/\D/g, '');
             const url = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
             window.open(url, '_blank');
+        };
+
+        // نظام الطباعة المخصص
+        window.printReport = () => {
+            const container = document.getElementById('print-container');
+            const month = state.selectedMonth;
+            const approvedUsers = state.volunteers.filter(u => u.status === 'approved');
+            const totalM = approvedUsers.filter(u=>u.type==='monthly').reduce((s,u)=>s+Number(u.package),0);
+            const totalY = approvedUsers.filter(u=>u.type==='yearly').reduce((s,u)=>s+Number(u.package),0);
+            const collected = approvedUsers.reduce((s,u) => (u.payments && u.payments[month]) ? s+Number(u.package) : s, 0);
+
+            let html = `
+                <div style="direction: rtl; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #000; padding: 20px;">
+                    <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 15px;">
+                        <h1 style="font-size: 28px; font-weight: bold; margin-bottom: 5px;">تقرير صندوق الأعمال التطوعية</h1>
+                        <p style="font-size: 18px;">التقرير المالي لشهر: <span dir="ltr" style="font-weight: bold;">${month}</span></p>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
+                        <div style="border: 1px solid #000; padding: 15px; border-radius: 8px; width: 23%; text-align: center;">
+                            <h3 style="font-size: 14px; margin-bottom: 5px; color: #333;">المشتركين الفاعلين</h3>
+                            <p style="font-size: 22px; font-weight: bold;">${approvedUsers.length}</p>
+                        </div>
+                        <div style="border: 1px solid #000; padding: 15px; border-radius: 8px; width: 23%; text-align: center;">
+                            <h3 style="font-size: 14px; margin-bottom: 5px; color: #333;">المُحصّل هذا الشهر</h3>
+                            <p style="font-size: 22px; font-weight: bold;">${collected} ريال</p>
+                        </div>
+                        <div style="border: 1px solid #000; padding: 15px; border-radius: 8px; width: 23%; text-align: center;">
+                            <h3 style="font-size: 14px; margin-bottom: 5px; color: #333;">المتوقع شهرياً</h3>
+                            <p style="font-size: 22px; font-weight: bold;">${totalM} ريال</p>
+                        </div>
+                        <div style="border: 1px solid #000; padding: 15px; border-radius: 8px; width: 23%; text-align: center;">
+                            <h3 style="font-size: 14px; margin-bottom: 5px; color: #333;">المتوقع سنوياً</h3>
+                            <p style="font-size: 22px; font-weight: bold;">${totalY} ريال</p>
+                        </div>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse; text-align: right;" border="1">
+                        <thead>
+                            <tr style="background-color: #f3f4f6;">
+                                <th style="padding: 12px; border: 1px solid #000;">الاسم</th>
+                                <th style="padding: 12px; border: 1px solid #000;">الهاتف</th>
+                                <th style="padding: 12px; border: 1px solid #000;">الباقة</th>
+                                <th style="padding: 12px; border: 1px solid #000;">النوع</th>
+                                <th style="padding: 12px; border: 1px solid #000;">حالة الدفع</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+
+            approvedUsers.forEach(u => {
+                const isPaid = u.payments && u.payments[month];
+                html += `
+                            <tr>
+                                <td style="padding: 10px; border: 1px solid #000;">${u.name}</td>
+                                <td style="padding: 10px; border: 1px solid #000;" dir="ltr">${u.phone}</td>
+                                <td style="padding: 10px; border: 1px solid #000; font-weight: bold;">${u.package} ريال</td>
+                                <td style="padding: 10px; border: 1px solid #000;">${u.type==='monthly'?'شهري':'سنوي'}</td>
+                                <td style="padding: 10px; border: 1px solid #000; font-weight: bold; color: ${isPaid ? '#047857' : '#dc2626'};">${isPaid ? 'تم الدفع ✓' : 'لم يدفع ✗'}</td>
+                            </tr>
+                `;
+            });
+
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            container.innerHTML = html;
+            setTimeout(() => { window.print(); }, 100);
         };
 
         // --- Navigation ---
@@ -343,14 +422,12 @@
         // --- Firebase Init & Listeners ---
         const setupFirebase = async () => {
             try {
-                // Rule 3: Auth First
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
                     await signInAnonymously(auth);
                 }
 
-                // Listeners
                 onSnapshot(collection(db, getColPath('volunteers')), (snapshot) => {
                     state.volunteers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     if(state.view === 'admin') renderAdmin();
@@ -382,8 +459,6 @@
         };
 
         // --- Forms & Actions ---
-        
-        // 1. Register
         document.getElementById('form-register').onsubmit = async (e) => {
             e.preventDefault();
             const btn = e.target.querySelector('button');
@@ -410,7 +485,6 @@
             }
         };
 
-        // 2. Login
         document.getElementById('form-login').onsubmit = (e) => {
             e.preventDefault();
             const phone = document.getElementById('log-phone').value;
@@ -482,7 +556,7 @@
                     <form onsubmit="adminAction('addMember', event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <input required type="text" id="new-mem-name" placeholder="الاسم الثلاثي" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500" />
                         <input required type="tel" id="new-mem-phone" placeholder="رقم الهاتف (مع مفتاح الدولة 968...)" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500" />
-                        <select id="new-mem-type" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="monthly">شهري</option><option value="yearly">سنوي</option></select>
+                        <select id="new-mem-type" onchange="updatePackageOptions('new-mem-type', 'new-mem-pkg')" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="monthly">شهري</option><option value="yearly">سنوي</option></select>
                         <select id="new-mem-pkg" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="1">1 ريال</option><option value="2">2 ريال</option><option value="3">3 ريال</option><option value="5">5 ريال</option><option value="10">10 ريال</option><option value="20">20 ريال</option><option value="50">50 ريال</option></select>
                         <button type="submit" class="md:col-span-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-lg font-bold transition-colors">إضافة العضو وإرسال التفاصيل عبر واتساب</button>
                     </form>
@@ -513,10 +587,6 @@
                         <input type="month" id="month-picker" value="${state.selectedMonth}" onchange="updateMonth(this.value)" class="border border-gray-300 rounded-lg px-3 py-2 outline-none font-bold text-gray-700"/>
                         <button onclick="printReport()" class="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2"><i class="fas fa-print"></i> طباعة التقرير</button>
                     </div>
-                </div>
-                <div class="hidden print:block text-center mb-8 border-b-2 border-gray-800 pb-4">
-                    <h1 class="text-3xl font-bold mb-2">تقرير صندوق الأعمال التطوعية</h1>
-                    <p class="text-xl">التقرير المالي لشهر: <span dir="ltr" class="font-bold">${state.selectedMonth}</span></p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                     <div class="bg-emerald-50 p-6 rounded-xl border border-emerald-100"><h3 class="text-emerald-800 text-sm font-bold mb-2">المشتركين الفاعلين</h3><p class="text-3xl font-black text-emerald-600">${approvedUsers.length}</p></div>
@@ -585,80 +655,6 @@
 
         window.updateMonth = (val) => { state.selectedMonth = val; renderAdmin(); };
 
-        // نظام الطباعة المخصص
-        window.printReport = () => {
-            const container = document.getElementById('print-container');
-            const month = state.selectedMonth;
-            const approvedUsers = state.volunteers.filter(u => u.status === 'approved');
-            const totalM = approvedUsers.filter(u=>u.type==='monthly').reduce((s,u)=>s+Number(u.package),0);
-            const totalY = approvedUsers.filter(u=>u.type==='yearly').reduce((s,u)=>s+Number(u.package),0);
-            const collected = approvedUsers.reduce((s,u) => (u.payments && u.payments[month]) ? s+Number(u.package) : s, 0);
-
-            let html = `
-                <div style="direction: rtl; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #000; padding: 20px;">
-                    <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 15px;">
-                        <h1 style="font-size: 28px; font-weight: bold; margin-bottom: 5px;">تقرير صندوق الأعمال التطوعية</h1>
-                        <p style="font-size: 18px;">التقرير المالي لشهر: <span dir="ltr" style="font-weight: bold;">${month}</span></p>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
-                        <div style="border: 1px solid #000; padding: 15px; border-radius: 8px; width: 23%; text-align: center;">
-                            <h3 style="font-size: 14px; margin-bottom: 5px; color: #333;">المشتركين الفاعلين</h3>
-                            <p style="font-size: 22px; font-weight: bold;">${approvedUsers.length}</p>
-                        </div>
-                        <div style="border: 1px solid #000; padding: 15px; border-radius: 8px; width: 23%; text-align: center;">
-                            <h3 style="font-size: 14px; margin-bottom: 5px; color: #333;">المُحصّل هذا الشهر</h3>
-                            <p style="font-size: 22px; font-weight: bold;">${collected} ريال</p>
-                        </div>
-                        <div style="border: 1px solid #000; padding: 15px; border-radius: 8px; width: 23%; text-align: center;">
-                            <h3 style="font-size: 14px; margin-bottom: 5px; color: #333;">المتوقع شهرياً</h3>
-                            <p style="font-size: 22px; font-weight: bold;">${totalM} ريال</p>
-                        </div>
-                        <div style="border: 1px solid #000; padding: 15px; border-radius: 8px; width: 23%; text-align: center;">
-                            <h3 style="font-size: 14px; margin-bottom: 5px; color: #333;">المتوقع سنوياً</h3>
-                            <p style="font-size: 22px; font-weight: bold;">${totalY} ريال</p>
-                        </div>
-                    </div>
-                    <table style="width: 100%; border-collapse: collapse; text-align: right;" border="1">
-                        <thead>
-                            <tr style="background-color: #f3f4f6;">
-                                <th style="padding: 12px; border: 1px solid #000;">الاسم</th>
-                                <th style="padding: 12px; border: 1px solid #000;">الهاتف</th>
-                                <th style="padding: 12px; border: 1px solid #000;">الباقة</th>
-                                <th style="padding: 12px; border: 1px solid #000;">النوع</th>
-                                <th style="padding: 12px; border: 1px solid #000;">حالة الدفع</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-            `;
-
-            approvedUsers.forEach(u => {
-                const isPaid = u.payments && u.payments[month];
-                html += `
-                            <tr>
-                                <td style="padding: 10px; border: 1px solid #000;">${u.name}</td>
-                                <td style="padding: 10px; border: 1px solid #000;" dir="ltr">${u.phone}</td>
-                                <td style="padding: 10px; border: 1px solid #000; font-weight: bold;">${u.package} ريال</td>
-                                <td style="padding: 10px; border: 1px solid #000;">${u.type==='monthly'?'شهري':'سنوي'}</td>
-                                <td style="padding: 10px; border: 1px solid #000; font-weight: bold; color: ${isPaid ? '#047857' : '#dc2626'};">${isPaid ? 'تم الدفع ✓' : 'لم يدفع ✗'}</td>
-                            </tr>
-                `;
-            });
-
-            html += `
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            
-            container.innerHTML = html;
-            
-            // الاعتماد الكامل على CSS لإظهاره في الطباعة فقط
-            // نعطي المتصفح جزء من الثانية لرسم التقرير في الخلفية ثم نفتح نافذة الطباعة
-            setTimeout(() => {
-                window.print();
-            }, 100);
-        };
-
         // Admin Action Handler
         window.adminAction = async (action, arg1, arg2, arg3) => {
             const getU = (id) => state.volunteers.find(u => u.id === id);
@@ -668,7 +664,7 @@
                     const u = getU(arg1);
                     const pass = Math.floor(1000 + Math.random() * 9000).toString();
                     await updateDoc(doc(db, getColPath('volunteers'), u.id), { status: 'approved', password: pass });
-                    const msg = `مرحباً ${u.name}،\n\nشكراً لانضمامك معنا!\n\nتفاصيل اشتراكك:\n- الباقة: ${u.package} ريال\n- النوع: ${u.type==='monthly'?'شهري':'سنوي'}\n\nرابط الموقع: https://volunteer-fund.local\nرقم الهاتف: ${u.phone}\nالرقم السري: ${pass}`;
+                    const msg = `مرحباً ${u.name}،\n\nنشكرك من القلب لانضمامك ومساهمتك معنا في صندوق الأعمال التطوعية. نسأل الله أن يبارك في رزقك ويتقبل منك هذا العمل الصالح ويجعله في ميزان حسناتك. 🌿\n\nتفاصيل اشتراكك:\n- الباقة: ${u.package} ريال\n- النوع: ${u.type==='monthly'?'شهري':'سنوي'}\n\nندعوك لزيارة موقعنا لمتابعة أحدث أخبار ومشاريع الصندوق بكل شفافية:\n🌐 رابط الموقع: https://akmoman.github.io/sondok/\n📱 رقم الهاتف (للدخول): ${u.phone}\n🔑 الرقم السري: ${pass}`;
                     sendWhatsApp(u.phone, msg);
                     showModal('success', 'تم القبول', 'تم قبول المشترك وتوليد الرقم السري بنجاح.');
                 }
@@ -688,7 +684,7 @@
                         status: 'approved', password: pass, payments: {}, timestamp: Date.now()
                     };
                     await addDoc(collection(db, getColPath('volunteers')), data);
-                    const msg = `مرحباً ${data.name}،\n\nتمت إضافتك بنجاح كعضو في صندوق الأعمال التطوعية! 🌿\n\nالباقة: ${data.package} ريال (${data.type==='monthly'?'شهري':'سنوي'})\n\nللدخول لحسابك:\nرابط الموقع: https://volunteer-fund.local\nرقم الهاتف: ${data.phone}\nالرقم السري: ${pass}`;
+                    const msg = `مرحباً ${data.name}،\n\nنشكرك من القلب لانضمامك ومساهمتك معنا في صندوق الأعمال التطوعية. جزاك الله خيراً وبارك لك في مالك وأهلك. 🌿\n\nتفاصيل اشتراكك:\n- الباقة: ${data.package} ريال (${data.type==='monthly'?'شهري':'سنوي'})\n\nندعوك لتسجيل الدخول إلى موقع الصندوق لمتابعة أين تذهب مساهمتك وللإطلاع على أحدث المشاريع:\n🌐 رابط الموقع: https://akmoman.github.io/sondok/\n📱 رقم الهاتف (للدخول): ${data.phone}\n🔑 الرقم السري: ${pass}`;
                     sendWhatsApp(data.phone, msg);
                     arg1.target.reset();
                     showModal('success', 'تمت الإضافة', 'تم إضافة العضو بنجاح وتجهيز رسالة الواتساب.');
@@ -701,7 +697,7 @@
                 }
                 else if (action === 'markAllPaid') {
                     showModal('confirm', 'تعيين الكل', `هل أنت متأكد من تعيين الجميع كـ "تم الدفع" لشهر ${state.selectedMonth}؟`, async () => {
-                        const batch = []; // simplistic batch
+                        const batch = []; 
                         const toUpdate = state.volunteers.filter(u => u.status === 'approved');
                         for(let u of toUpdate) {
                             const newPayments = { ...(u.payments || {}), [state.selectedMonth]: true };
@@ -712,13 +708,13 @@
                 }
                 else if (action === 'remind') {
                     const u = getU(arg1);
-                    sendWhatsApp(u.phone, `مرحباً ${u.name}،\n\nنود تذكيرك بلطف بتسديد مساهمتك في صندوق الأعمال التطوعية لشهر ${state.selectedMonth}.\nمبلغ الباقة: ${u.package} ريال.\n\nشكراً لدعمك المستمر! 🌿`);
+                    sendWhatsApp(u.phone, `مرحباً ${u.name}،\n\nنسأل الله أن تكون بأتم الصحة والعافية.\nنود تذكيرك بلطف بتسديد مساهمتك في صندوق الأعمال التطوعية لشهر ${state.selectedMonth}.\nمبلغ الباقة: ${u.package} ريال.\n\nبمساهمتك نستمر في العطاء، جزاك الله خيراً! 🌿\nيمكنك دائماً متابعة مشاريع الصندوق عبر: https://akmoman.github.io/sondok/`);
                 }
                 else if (action === 'newPass') {
                     const u = getU(arg1);
                     const pass = Math.floor(1000 + Math.random() * 9000).toString();
                     await updateDoc(doc(db, getColPath('volunteers'), u.id), { password: pass });
-                    sendWhatsApp(u.phone, `مرحباً ${u.name}،\n\nتم إصدار رقم سري جديد لحسابك.\n\nرقم الهاتف: ${u.phone}\nالرقم السري الجديد: ${pass}`);
+                    sendWhatsApp(u.phone, `مرحباً ${u.name}،\n\nتم إصدار رقم سري جديد لحسابك في صندوق الأعمال التطوعية بناءً على طلبك.\n\nتفضل بالدخول للموقع ومتابعة مستجداتنا:\n🌐 رابط الموقع: https://akmoman.github.io/sondok/\n📱 رقم الهاتف: ${u.phone}\n🔑 الرقم السري الجديد: ${pass}`);
                 }
                 else if (action === 'addDoc') {
                     arg1.preventDefault();
@@ -783,7 +779,7 @@
         // Initial setup
         setupFirebase();
         renderNav();
-        document.getElementById('tab-requests').classList.add('active'); // default admin tab
+        document.getElementById('tab-requests').classList.add('active'); 
     </script>
 </body>
 </html>
