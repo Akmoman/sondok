@@ -64,11 +64,14 @@
             <p class="text-xl text-gray-600 mb-8 max-w-2xl">
                 معاً نصنع الأثر. ساهم معنا بباقات تبدأ من ريال واحد شهرياً لدعم المشاريع الخيرية والمجتمعية.
             </p>
-            <div class="flex flex-wrap justify-center gap-4">
-                <button onclick="navigate('register')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-lg font-bold text-lg flex items-center gap-2 transition-all">
+            <div class="flex flex-col md:flex-row flex-wrap justify-center gap-4 w-full md:w-auto px-4">
+                <button onclick="navigate('register')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-lg font-bold text-lg flex justify-center items-center gap-2 transition-all">
                     <i class="fas fa-user-plus"></i> انضم إلينا الآن
                 </button>
-                <button onclick="navigate('login')" class="bg-white border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50 px-8 py-3 rounded-lg font-bold text-lg flex items-center gap-2 transition-all">
+                <button onclick="navigate('public')" class="bg-white border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 px-8 py-3 rounded-lg font-bold text-lg flex justify-center items-center gap-2 transition-all">
+                    <i class="fas fa-users"></i> شركاء الأجر والمساهمون
+                </button>
+                <button onclick="navigate('login')" class="bg-gray-800 hover:bg-gray-900 text-white px-8 py-3 rounded-lg font-bold text-lg flex justify-center items-center gap-2 transition-all">
                     <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
                 </button>
             </div>
@@ -93,18 +96,19 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-gray-700 font-bold mb-2">نوع الاشتراك</label>
-                            <select id="reg-type" onchange="updatePackageOptions('reg-type', 'reg-package')" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                            <select id="reg-type" onchange="updatePackageOptions('reg-type', 'reg-package', 'reg-custom-package')" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
                                 <option value="monthly">شهري</option>
                                 <option value="yearly">سنوي</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-gray-700 font-bold mb-2">مبلغ الباقة</label>
-                            <select id="reg-package" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                            <select id="reg-package" onchange="handlePackageChange('reg-package', 'reg-custom-package')" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
                                 <option value="1">1 ريال</option><option value="2">2 ريال</option><option value="3">3 ريال</option>
                                 <option value="5">5 ريال</option><option value="10">10 ريال</option><option value="20">20 ريال</option>
-                                <option value="50">50 ريال</option>
+                                <option value="50">50 ريال</option><option value="custom">مبلغ آخر...</option>
                             </select>
+                            <input type="number" id="reg-custom-package" class="hidden w-full mt-2 border border-emerald-300 p-3 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="أدخل المبلغ (ريال)" min="1" />
                         </div>
                     </div>
                     <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg mt-6 transition-colors">
@@ -196,6 +200,27 @@
                         <h3 class="font-bold text-gray-700">الشفافية مبدأنا</h3>
                         <p class="text-sm text-gray-500 mt-2">نشاركك كل التحديثات إيماناً منا بأن مساهمتك تصنع الفارق.</p>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Public View (Contributors List) -->
+        <div id="view-public" class="view-section hidden max-w-5xl mx-auto space-y-6">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-emerald-700 mb-2">شركاء الأجر والمساهمون</h2>
+                <p class="text-gray-600">نعتز بكل من ساهم معنا في الصندوق. انضم إليهم لتكن جزءاً من الأثر!</p>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-emerald-100">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="font-bold text-gray-800 text-xl">المساهمون الفاعلون: <span id="public-members-count" class="text-emerald-600 font-black">0</span></h3>
+                </div>
+                <div id="public-members-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <!-- سيتم تعبئتها برمجياً من الفايربيس -->
+                </div>
+                <div class="mt-10 text-center">
+                    <button onclick="navigate('register')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-lg font-bold text-lg flex items-center justify-center gap-2 mx-auto transition-all">
+                        <i class="fas fa-hand-holding-heart"></i> كن واحداً منهم وسجل الآن
+                    </button>
                 </div>
             </div>
         </div>
@@ -301,16 +326,35 @@
 
         window.closeModal = () => el.modal.classList.add('hidden');
 
-        // تحديث الباقات بناءً على نوع الاشتراك (شهري / سنوي)
-        window.updatePackageOptions = (typeId, pkgId) => {
+        // تحديث الباقات بناءً على نوع الاشتراك مع خيار (مبلغ آخر)
+        window.updatePackageOptions = (typeId, pkgId, customId) => {
             const type = document.getElementById(typeId).value;
             const pkgSelect = document.getElementById(pkgId);
+            const customInput = document.getElementById(customId);
             
             const monthlyOptions = [1, 2, 3, 5, 10, 20, 50];
             const yearlyOptions = [12, 20, 50, 100];
             const options = type === 'monthly' ? monthlyOptions : yearlyOptions;
             
             pkgSelect.innerHTML = options.map(val => `<option value="${val}">${val} ريال</option>`).join('');
+            pkgSelect.innerHTML += `<option value="custom">مبلغ آخر...</option>`;
+            
+            if(customInput) handlePackageChange(pkgId, customId);
+        };
+
+        // إظهار/إخفاء حقل المبلغ المخصص
+        window.handlePackageChange = (pkgId, customId) => {
+            const pkgSelect = document.getElementById(pkgId);
+            const customInput = document.getElementById(customId);
+            if (!customInput) return;
+
+            if (pkgSelect.value === 'custom') {
+                customInput.classList.remove('hidden');
+                customInput.required = true;
+            } else {
+                customInput.classList.add('hidden');
+                customInput.required = false;
+            }
         };
 
         const sendWhatsApp = (phone, message) => {
@@ -319,7 +363,6 @@
             window.open(url, '_blank');
         };
 
-        // فلتر الجدول المالي
         window.setFinanceFilter = (filter) => {
             state.financeFilter = filter;
             renderAdmin();
@@ -346,7 +389,6 @@
             const totalM = targetUsers.filter(u=>u.type==='monthly').reduce((s,u)=>s+Number(u.package),0);
             const totalY = targetUsers.filter(u=>u.type==='yearly').reduce((s,u)=>s+Number(u.package),0);
             
-            // حساب المحصل مخصص للتقرير الشامل أو الدافعين فقط
             const collected = (type === 'unpaid') ? 0 : paidUsers.reduce((s,u) => s+Number(u.package), 0);
 
             let html = `
@@ -414,6 +456,7 @@
             
             if(viewName === 'admin') renderAdmin();
             if(viewName === 'user') renderUserDash();
+            if(viewName === 'public') renderPublicMembers();
             if(viewName === 'register') {
                 document.getElementById('register-form-container').classList.remove('hidden');
                 document.getElementById('register-success').classList.add('hidden');
@@ -449,6 +492,7 @@
                 onSnapshot(collection(db, getColPath('volunteers')), (snapshot) => {
                     state.volunteers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     if(state.view === 'admin') renderAdmin();
+                    if(state.view === 'public') renderPublicMembers();
                     document.getElementById('count-pending').textContent = state.volunteers.filter(v=>v.status==='pending').length;
                 }, (err) => console.error("Error fetching volunteers:", err));
 
@@ -481,12 +525,19 @@
             e.preventDefault();
             const btn = e.target.querySelector('button');
             btn.disabled = true; btn.innerHTML = 'جاري الإرسال...';
+            
+            // قراءة الباقة (سواء من الخيارات أو من حقل "مبلغ آخر")
+            let selectedPkg = document.getElementById('reg-package').value;
+            if (selectedPkg === 'custom') {
+                selectedPkg = document.getElementById('reg-custom-package').value;
+            }
+
             try {
                 await addDoc(collection(db, getColPath('volunteers')), {
                     name: document.getElementById('reg-name').value,
                     phone: document.getElementById('reg-phone').value,
                     type: document.getElementById('reg-type').value,
-                    package: document.getElementById('reg-package').value,
+                    package: selectedPkg,
                     status: 'pending',
                     password: null,
                     payments: {},
@@ -495,6 +546,7 @@
                 document.getElementById('register-form-container').classList.add('hidden');
                 document.getElementById('register-success').classList.remove('hidden');
                 e.target.reset();
+                updatePackageOptions('reg-type', 'reg-package', 'reg-custom-package'); // Reset UI
             } catch(err) {
                 showModal('error', 'خطأ', 'حدث خطأ أثناء الإرسال. يرجى المحاولة لاحقاً.');
                 console.error(err);
@@ -571,12 +623,15 @@
                 <div class="flex justify-between items-center mb-6 border-b pb-4"><h2 class="text-2xl font-bold text-gray-800">إدارة الأعضاء</h2></div>
                 <div class="bg-emerald-50/50 p-5 rounded-xl border border-emerald-100 mb-8">
                     <h3 class="font-bold mb-4 text-emerald-800 flex items-center gap-2"><i class="fas fa-plus"></i> إضافة عضو جديد مباشرة</h3>
-                    <form onsubmit="adminAction('addMember', event)" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <form onsubmit="adminAction('addMember', event)" class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                         <input required type="text" id="new-mem-name" placeholder="الاسم الثلاثي" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500" />
                         <input required type="tel" id="new-mem-phone" placeholder="رقم الهاتف (مع مفتاح الدولة 968...)" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500" />
-                        <select id="new-mem-type" onchange="updatePackageOptions('new-mem-type', 'new-mem-pkg')" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="monthly">شهري</option><option value="yearly">سنوي</option></select>
-                        <select id="new-mem-pkg" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="1">1 ريال</option><option value="2">2 ريال</option><option value="3">3 ريال</option><option value="5">5 ريال</option><option value="10">10 ريال</option><option value="20">20 ريال</option><option value="50">50 ريال</option></select>
-                        <button type="submit" class="md:col-span-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2.5 rounded-lg font-bold transition-colors">إضافة العضو وإرسال التفاصيل عبر واتساب</button>
+                        <select id="new-mem-type" onchange="updatePackageOptions('new-mem-type', 'new-mem-pkg', 'new-mem-custom-pkg')" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="monthly">شهري</option><option value="yearly">سنوي</option></select>
+                        <div>
+                            <select id="new-mem-pkg" onchange="handlePackageChange('new-mem-pkg', 'new-mem-custom-pkg')" class="w-full p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="1">1 ريال</option><option value="2">2 ريال</option><option value="3">3 ريال</option><option value="5">5 ريال</option><option value="10">10 ريال</option><option value="20">20 ريال</option><option value="50">50 ريال</option><option value="custom">مبلغ آخر...</option></select>
+                            <input type="number" id="new-mem-custom-pkg" class="hidden w-full p-3 mt-2 border border-emerald-300 rounded-lg outline-none focus:border-emerald-500" placeholder="أدخل المبلغ (ريال)" min="1" />
+                        </div>
+                        <button type="submit" class="md:col-span-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-bold transition-colors">إضافة العضو وإرسال التفاصيل عبر واتساب</button>
                     </form>
                 </div>
                 <h3 class="font-bold mb-4 text-gray-800">الأعضاء الحاليين (${approvedUsers.length})</h3>
@@ -689,9 +744,32 @@
             el.adminContent.innerHTML = html;
         };
 
-        window.updateMonth = (val) => { state.selectedMonth = val; renderAdmin(); };
+        // --- Public Dashboard Logic ---
+        const renderPublicMembers = () => {
+            if(state.view !== 'public') return;
+            const approvedUsers = state.volunteers.filter(u => u.status === 'approved');
+            document.getElementById('public-members-count').textContent = approvedUsers.length;
+            
+            const listContainer = document.getElementById('public-members-list');
+            if(approvedUsers.length === 0) {
+                listContainer.innerHTML = '<p class="col-span-full text-center text-gray-500 py-6">لا يوجد مساهمين حالياً، كن أنت الأول!</p>';
+                return;
+            }
 
-        // Admin Action Handler
+            listContainer.innerHTML = approvedUsers.map(u => `
+                <div class="border border-emerald-100 bg-emerald-50/30 p-4 rounded-xl flex items-center gap-4 hover:shadow-md transition-shadow">
+                    <div class="bg-emerald-100 text-emerald-600 w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl shrink-0">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800">${u.name}</h4>
+                        <p class="text-sm text-gray-600 font-medium mt-1">مساهم بـ <span class="text-emerald-700">${u.package} ريال</span> (${u.type === 'monthly' ? 'شهري' : 'سنوي'})</p>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+
         window.adminAction = async (action, arg1, arg2, arg3) => {
             const getU = (id) => state.volunteers.find(u => u.id === id);
             
@@ -712,17 +790,24 @@
                 else if (action === 'addMember') {
                     arg1.preventDefault();
                     const pass = Math.floor(1000 + Math.random() * 9000).toString();
+                    
+                    let selectedPkg = document.getElementById('new-mem-pkg').value;
+                    if (selectedPkg === 'custom') {
+                        selectedPkg = document.getElementById('new-mem-custom-pkg').value;
+                    }
+
                     const data = {
                         name: document.getElementById('new-mem-name').value,
                         phone: document.getElementById('new-mem-phone').value,
                         type: document.getElementById('new-mem-type').value,
-                        package: document.getElementById('new-mem-pkg').value,
+                        package: selectedPkg,
                         status: 'approved', password: pass, payments: {}, timestamp: Date.now()
                     };
                     await addDoc(collection(db, getColPath('volunteers')), data);
                     const msg = `مرحباً ${data.name}،\n\nنشكرك من القلب لانضمامك ومساهمتك معنا في صندوق الأعمال التطوعية. جزاك الله خيراً وبارك لك في مالك وأهلك. 🌿\n\nتفاصيل اشتراكك:\n- الباقة: ${data.package} ريال (${data.type==='monthly'?'شهري':'سنوي'})\n\nندعوك لتسجيل الدخول إلى موقع الصندوق لمتابعة أين تذهب مساهمتك وللإطلاع على أحدث المشاريع:\n🌐 رابط الموقع: https://akmoman.github.io/sondok/\n📱 رقم الهاتف (للدخول): ${data.phone}\n🔑 الرقم السري: ${pass}`;
                     sendWhatsApp(data.phone, msg);
                     arg1.target.reset();
+                    updatePackageOptions('new-mem-type', 'new-mem-pkg', 'new-mem-custom-pkg'); // Reset ui
                     showModal('success', 'تمت الإضافة', 'تم إضافة العضو بنجاح وتجهيز رسالة الواتساب.');
                 }
                 else if (action === 'togglePayment') {
