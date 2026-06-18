@@ -773,12 +773,15 @@
         window.adminAction = async (action, arg1, arg2, arg3) => {
             const getU = (id) => state.volunteers.find(u => u.id === id);
             
+            // إضافة نص معلومات الدفع الموحد لإدراجه في الرسائل
+            const paymentInfoMsg = `\n\n📌 *تنبيه هام:* يرجى إرسال إيصال الدفع (سكرين شوت) هنا بعد إتمام التحويل.\n*حسابات الصندوق:*\n🏦 بنك مسقط: 0367014374790018\n🏦 بنك نزوى: 009107664001\n📱 تحويل بالهاتف: 99219505`;
+
             try {
                 if(action === 'approve') {
                     const u = getU(arg1);
                     const pass = Math.floor(1000 + Math.random() * 9000).toString();
                     await updateDoc(doc(db, getColPath('volunteers'), u.id), { status: 'approved', password: pass });
-                    const msg = `مرحباً ${u.name}،\n\nنشكرك من القلب لانضمامك ومساهمتك معنا في صندوق الأعمال التطوعية. نسأل الله أن يبارك في رزقك ويتقبل منك هذا العمل الصالح ويجعله في ميزان حسناتك. 🌿\n\nتفاصيل اشتراكك:\n- الباقة: ${u.package} ريال\n- النوع: ${u.type==='monthly'?'شهري':'سنوي'}\n\nندعوك لزيارة موقعنا لمتابعة أحدث أخبار ومشاريع الصندوق بكل شفافية:\n🌐 رابط الموقع: https://akmoman.github.io/sondok/\n📱 رقم الهاتف (للدخول): ${u.phone}\n🔑 الرقم السري: ${pass}`;
+                    const msg = `مرحباً ${u.name}،\n\nنشكرك من القلب لانضمامك ومساهمتك معنا في صندوق الأعمال التطوعية. نسأل الله أن يبارك في رزقك ويتقبل منك هذا العمل الصالح ويجعله في ميزان حسناتك. 🌿\n\nتفاصيل اشتراكك:\n- الباقة: ${u.package} ريال\n- النوع: ${u.type==='monthly'?'شهري':'سنوي'}${paymentInfoMsg}\n\nندعوك لزيارة موقعنا لمتابعة أحدث أخبار ومشاريع الصندوق بكل شفافية:\n🌐 رابط الموقع: https://akmoman.github.io/sondok/\n📱 رقم الهاتف (للدخول): ${u.phone}\n🔑 الرقم السري: ${pass}`;
                     sendWhatsApp(u.phone, msg);
                     showModal('success', 'تم القبول', 'تم قبول المشترك وتوليد الرقم السري بنجاح.');
                 }
@@ -804,7 +807,7 @@
                         status: 'approved', password: pass, payments: {}, timestamp: Date.now()
                     };
                     await addDoc(collection(db, getColPath('volunteers')), data);
-                    const msg = `مرحباً ${data.name}،\n\nنشكرك من القلب لانضمامك ومساهمتك معنا في صندوق الأعمال التطوعية. جزاك الله خيراً وبارك لك في مالك وأهلك. 🌿\n\nتفاصيل اشتراكك:\n- الباقة: ${data.package} ريال (${data.type==='monthly'?'شهري':'سنوي'})\n\nندعوك لتسجيل الدخول إلى موقع الصندوق لمتابعة أين تذهب مساهمتك وللإطلاع على أحدث المشاريع:\n🌐 رابط الموقع: https://akmoman.github.io/sondok/\n📱 رقم الهاتف (للدخول): ${data.phone}\n🔑 الرقم السري: ${pass}`;
+                    const msg = `مرحباً ${data.name}،\n\nنشكرك من القلب لانضمامك ومساهمتك معنا في صندوق الأعمال التطوعية. جزاك الله خيراً وبارك لك في مالك وأهلك. 🌿\n\nتفاصيل اشتراكك:\n- الباقة: ${data.package} ريال (${data.type==='monthly'?'شهري':'سنوي'})${paymentInfoMsg}\n\nندعوك لتسجيل الدخول إلى موقع الصندوق لمتابعة أين تذهب مساهمتك وللإطلاع على أحدث المشاريع:\n🌐 رابط الموقع: https://akmoman.github.io/sondok/\n📱 رقم الهاتف (للدخول): ${data.phone}\n🔑 الرقم السري: ${pass}`;
                     sendWhatsApp(data.phone, msg);
                     arg1.target.reset();
                     updatePackageOptions('new-mem-type', 'new-mem-pkg', 'new-mem-custom-pkg'); // Reset ui
@@ -829,7 +832,7 @@
                 }
                 else if (action === 'remind') {
                     const u = getU(arg1);
-                    sendWhatsApp(u.phone, `مرحباً ${u.name}،\n\nنسأل الله أن تكون بأتم الصحة والعافية.\nنود تذكيرك بلطف بتسديد مساهمتك في صندوق الأعمال التطوعية لشهر ${state.selectedMonth}.\nمبلغ الباقة: ${u.package} ريال.\n\nبمساهمتك نستمر في العطاء، جزاك الله خيراً! 🌿\nيمكنك دائماً متابعة مشاريع الصندوق عبر: https://akmoman.github.io/sondok/`);
+                    sendWhatsApp(u.phone, `مرحباً ${u.name}،\n\nنسأل الله أن تكون بأتم الصحة والعافية.\nنود تذكيرك بلطف بتسديد مساهمتك في صندوق الأعمال التطوعية لشهر ${state.selectedMonth}.\nمبلغ الباقة: ${u.package} ريال.${paymentInfoMsg}\n\nبمساهمتك نستمر في العطاء، جزاك الله خيراً! 🌿\nيمكنك دائماً متابعة مشاريع الصندوق عبر: https://akmoman.github.io/sondok/`);
                 }
                 else if (action === 'newPass') {
                     const u = getU(arg1);
