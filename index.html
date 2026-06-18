@@ -45,7 +45,7 @@
     <nav class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-10 print:hidden">
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2 cursor-pointer" onclick="navigate('home')">
-                <i class="fas fa-heartbeat text-emerald-600 text-2xl"></i>
+                <img src="https://storage.googleapis.com/akm1983/%E2%80%8F%D9%84%D9%82%D8%B7%D8%A9%20%D8%A7%D9%84%D8%B4%D8%A7%D8%B4%D8%A9%20%D9%A2%D9%A0%D9%A2%D9%A6-%D9%A0%D9%A6-%D9%A1%D9%A8%20%D9%81%D9%8A%20%D9%A9.%D9%A3%D9%A0.%D9%A2%D9%A2%C2%A0%D9%85.png" alt="شعار الصندوق" class="h-10 w-auto object-contain rounded">
                 <span class="font-bold text-xl text-emerald-800">صندوق الأعمال</span>
             </div>
             <div id="nav-actions" class="flex items-center gap-4">
@@ -59,7 +59,7 @@
         
         <!-- 1. Home View -->
         <div id="view-home" class="view-section flex flex-col items-center justify-center min-h-[70vh] text-center">
-            <i class="fas fa-heartbeat text-emerald-600 text-6xl mb-6"></i>
+            <img src="https://storage.googleapis.com/akm1983/%E2%80%8F%D9%84%D9%82%D8%B7%D8%A9%20%D8%A7%D9%84%D8%B4%D8%A7%D8%B4%D8%A9%20%D9%A2%D9%A0%D9%A2%D9%A6-%D9%A0%D9%A6-%D9%A1%D9%A8%20%D9%81%D9%8A%20%D9%A9.%D9%A3%D9%A0.%D9%A2%D9%A2%C2%A0%D9%85.png" alt="شعار الصندوق" class="h-32 md:h-48 w-auto object-contain mb-6 rounded-2xl shadow-sm bg-white p-2">
             <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">صندوق الأعمال التطوعية</h1>
             <p class="text-xl text-gray-600 mb-8 max-w-2xl">
                 معاً نصنع الأثر. ساهم معنا بباقات تبدأ من ريال واحد شهرياً لدعم المشاريع الخيرية والمجتمعية.
@@ -774,7 +774,7 @@
             const getU = (id) => state.volunteers.find(u => u.id === id);
             
             // إضافة نص معلومات الدفع الموحد لإدراجه في الرسائل
-            const paymentInfoMsg = `\n\n📌 *تنبيه هام:* يرجى إرسال إيصال الدفع (سكرين شوت) هنا بعد إتمام التحويل.\n*حسابات الصندوق:*\n🏦 بنك مسقط: 0367014374790018\n🏦 بنك نزوى: 009107664001\n📱 تحويل بالهاتف: 99219505`;
+            const paymentInfoMsg = `\n\n📌 *تنبيه هام:* يرجى إرسال إيصال الدفع (سكرين شوت) إلى نفس رقم هاتف التحويل أدناه بعد إتمام التحويل.\n*حسابات الصندوق:*\n🏦 بنك مسقط: 0367014374790018\n🏦 بنك نزوى: 009107664001\n📱 تحويل بالهاتف: 99219505 (باسم علي)`;
 
             try {
                 if(action === 'approve') {
