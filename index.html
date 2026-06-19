@@ -715,7 +715,7 @@
                 html += `<div class="bg-emerald-50/50 p-5 rounded-xl border border-emerald-100 mb-6"><h3 class="font-bold mb-4 text-emerald-800">إضافة جديد</h3><form onsubmit="adminAction('addDoc', event, '${tab}')" class="space-y-3">`;
                 
                 if(tab === 'news') {
-                    html += `<input id="f-title" required type="text" placeholder="عنوان الخبر" class="w-full p-3 border rounded-lg"/><textarea id="f-desc" required placeholder="تفاصيل الخبر" class="w-full p-3 border rounded-lg min-h-[100px]"></textarea>`;
+                    html += `<input id="f-title" required type="text" placeholder="عنوان الخبر" class="w-full p-3 border rounded-lg"/><textarea id="f-desc" required placeholder="تفاصيل الخبر" class="w-full p-3 border rounded-lg min-h-[100px]"></textarea><input id="f-image-url" type="url" placeholder="رابط الصورة من جوجل كلاود أو أي موقع آخر (اختياري)" class="w-full p-3 border rounded-lg text-left" dir="ltr" />`;
                 } else if(tab === 'projects') {
                     html += `<input id="f-title" required type="text" placeholder="اسم المشروع" class="w-full p-3 border rounded-lg"/><textarea id="f-desc" required placeholder="وصف المشروع" class="w-full p-3 border rounded-lg min-h-[100px]"></textarea><select id="f-type" class="w-full p-3 border rounded-lg"><option value="current">حالي</option><option value="future">مستقبلي</option></select>`;
                 } else if (tab === 'challenges') {
@@ -731,11 +731,12 @@
                     
                     html += `
                     <div class="p-5 bg-white rounded-xl border ${tab==='challenges'?'border-red-100':'border-gray-100'} flex justify-between items-start gap-4 shadow-sm">
-                        <div>
+                        <div class="w-full">
                             <h4 class="font-bold text-lg mb-1 ${tab==='challenges'?'text-red-800':''}">${item.title} ${extra}</h4>
                             <p class="${tab==='challenges'?'text-red-600':'text-gray-600'}">${item.content || item.description}</p>
+                            ${item.imageUrl ? `<img src="${item.imageUrl}" class="mt-4 max-h-48 rounded-lg object-cover border border-gray-200" onerror="this.style.display='none'" />` : ''}
                         </div>
-                        <button onclick="adminAction('deleteDoc', null, '${tab}', '${item.id}')" class="text-red-500 bg-red-50 hover:bg-red-500 hover:text-white p-2.5 rounded-lg"><i class="fas fa-times-circle text-xl"></i></button>
+                        <button onclick="adminAction('deleteDoc', null, '${tab}', '${item.id}')" class="shrink-0 text-red-500 bg-red-50 hover:bg-red-500 hover:text-white p-2.5 rounded-lg"><i class="fas fa-times-circle text-xl"></i></button>
                     </div>`;
                 });
                 html += `</div>`;
@@ -847,7 +848,12 @@
                         title: document.getElementById('f-title').value,
                         timestamp: Date.now()
                     };
-                    if(tab === 'news') { data.content = document.getElementById('f-desc').value; data.date = new Date().toISOString().split('T')[0]; }
+                    if(tab === 'news') { 
+                        data.content = document.getElementById('f-desc').value; 
+                        data.date = new Date().toISOString().split('T')[0]; 
+                        const imgUrl = document.getElementById('f-image-url').value;
+                        if(imgUrl) data.imageUrl = imgUrl;
+                    }
                     if(tab === 'projects') { data.description = document.getElementById('f-desc').value; data.type = document.getElementById('f-type').value; }
                     if(tab === 'challenges') { data.description = document.getElementById('f-desc').value; }
                     
@@ -884,10 +890,11 @@
 
             // Render News
             document.getElementById('user-news-list').innerHTML = state.news.map(n => `
-                <div class="border-r-4 border-blue-500 bg-gray-50 p-4 rounded-l-lg">
+                <div class="border-r-4 border-blue-500 bg-gray-50 p-4 rounded-l-lg overflow-hidden">
                     <span class="text-xs text-gray-400 mb-1 block">${n.date}</span>
                     <h4 class="font-bold mb-1">${n.title}</h4>
                     <p class="text-gray-600 text-sm">${n.content}</p>
+                    ${n.imageUrl ? `<img src="${n.imageUrl}" alt="صورة الخبر" class="w-full h-auto mt-3 rounded-lg object-cover border border-gray-200 shadow-sm" onerror="this.style.display='none'" />` : ''}
                 </div>
             `).join('');
 
