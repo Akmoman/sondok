@@ -233,6 +233,12 @@
                 </button>
             </div>
 
+            <!-- Public Members (Moved to Top) -->
+            <div class="bg-emerald-50/50 p-6 rounded-xl shadow-sm border border-emerald-100">
+                <h3 class="font-bold text-gray-800 text-2xl mb-6 text-center">شركاء الأجر والمساهمون (<span id="public-members-count" class="text-amber-600">0</span>)</h3>
+                <div id="public-members-list" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <!-- Public News -->
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
@@ -251,12 +257,6 @@
             <div class="bg-red-50 p-6 rounded-xl border border-red-100">
                 <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-red-800"><i class="fas fa-exclamation-triangle"></i> تحديات نتجاوزها معاً</h3>
                 <div id="public-challenges-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-            </div>
-
-            <!-- Public Members -->
-            <div class="bg-emerald-50/50 p-6 rounded-xl shadow-sm border border-emerald-100 mt-8">
-                <h3 class="font-bold text-gray-800 text-2xl mb-6 text-center">شركاء الأجر والمساهمون (<span id="public-members-count" class="text-amber-600">0</span>)</h3>
-                <div id="public-members-list" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
             </div>
         </div>
 
@@ -300,6 +300,8 @@
             view: 'home', user: null, volunteers: [], news: [], projects: [], challenges: [],
             adminTab: 'requests', selectedMonth: `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`, financeFilter: 'all', paymentMethodFilter: 'all'
         };
+
+        let initialLoad = true;
 
         const el = {
             navActions: document.getElementById('nav-actions'), views: document.querySelectorAll('.view-section'),
@@ -451,7 +453,30 @@
             el.navActions.innerHTML = html;
         };
 
-        window.logout = () => { state.user = null; navigate('home'); };
+        window.logout = () => { 
+            state.user = null; 
+            localStorage.removeItem('sondok_creds');
+            navigate('home'); 
+        };
+
+        window.autoLogin = () => {
+            const credsStr = localStorage.getItem('sondok_creds');
+            if (credsStr) {
+                try {
+                    const { phone, pass } = JSON.parse(credsStr);
+                    if (phone === 'admin' && pass === 'admin') {
+                        state.user = { role: 'admin', name: 'مدير النظام' };
+                        navigate('admin');
+                        return;
+                    }
+                    const user = state.volunteers.find(u => u.phone === phone && u.password === pass && u.status === 'approved');
+                    if (user) { 
+                        state.user = { role: 'user', ...user }; 
+                        navigate('user'); 
+                    }
+                } catch(e) {}
+            }
+        };
 
         const setupFirebase = async () => {
             try {
@@ -460,6 +485,12 @@
 
                 onSnapshot(collection(db, getColPath('volunteers')), (snapshot) => {
                     state.volunteers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    
+                    if (initialLoad) {
+                        initialLoad = false;
+                        autoLogin();
+                    }
+
                     if(state.view === 'admin') renderAdmin();
                     if(state.view === 'user') renderUserDash();
                     if(state.view === 'public') renderPublicPortal();
@@ -520,10 +551,15 @@
 
             if (phone === 'admin' && pass === 'admin') {
                 state.user = { role: 'admin', name: 'مدير النظام' }; errDiv.classList.add('hidden');
+                localStorage.setItem('sondok_creds', JSON.stringify({phone, pass}));
                 e.target.reset(); navigate('admin'); return;
             }
             const user = state.volunteers.find(u => u.phone === phone && u.password === pass && u.status === 'approved');
-            if (user) { state.user = { role: 'user', ...user }; errDiv.classList.add('hidden'); e.target.reset(); navigate('user'); } 
+            if (user) { 
+                state.user = { role: 'user', ...user }; errDiv.classList.add('hidden'); 
+                localStorage.setItem('sondok_creds', JSON.stringify({phone, pass}));
+                e.target.reset(); navigate('user'); 
+            } 
             else { errDiv.textContent = 'رقم الهاتف أو الرقم السري غير صحيح.'; errDiv.classList.remove('hidden'); }
         };
 
