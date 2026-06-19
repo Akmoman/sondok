@@ -31,18 +31,15 @@
 </head>
 <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col print:bg-white">
 
-    <!-- حاوية مخصصة لطباعة التقارير فقط -->
     <div id="print-container" class="hidden"></div>
 
-    <!-- Custom Modal (Replaces alert & confirm) -->
+    <!-- Custom Modal -->
     <div id="custom-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4 print:hidden">
         <div class="bg-white p-6 rounded-xl max-w-sm w-full text-center shadow-2xl transform transition-all">
             <div id="modal-icon" class="text-4xl mb-4"></div>
             <h3 id="modal-title" class="font-bold text-xl mb-2 text-gray-800"></h3>
             <p id="modal-message" class="text-gray-600 mb-6 whitespace-pre-line"></p>
-            <div id="modal-actions" class="flex justify-center gap-3">
-                <!-- Buttons injected dynamically -->
-            </div>
+            <div id="modal-actions" class="flex justify-center gap-3"></div>
         </div>
     </div>
 
@@ -53,9 +50,7 @@
                 <img src="https://storage.googleapis.com/akm1983/%E2%80%8F%D9%84%D9%82%D8%B7%D8%A9%20%D8%A7%D9%84%D8%B4%D8%A7%D8%B4%D8%A9%20%D9%A2%D9%A0%D9%A2%D9%A6-%D9%A0%D9%A6-%D9%A1%D9%A8%20%D9%81%D9%8A%20%D9%A9.%D9%A3%D9%A0.%D9%A2%D9%A2%C2%A0%D9%85.png" alt="شعار الصندوق" class="h-10 w-auto object-contain rounded">
                 <span class="font-bold text-xl text-emerald-800">صندوق الأعمال</span>
             </div>
-            <div id="nav-actions" class="flex items-center gap-4">
-                <!-- Nav buttons injected here -->
-            </div>
+            <div id="nav-actions" class="flex items-center gap-4"></div>
         </div>
     </nav>
 
@@ -66,15 +61,13 @@
         <div id="view-home" class="view-section flex flex-col items-center justify-center min-h-[70vh] text-center">
             <img src="https://storage.googleapis.com/akm1983/%E2%80%8F%D9%84%D9%82%D8%B7%D8%A9%20%D8%A7%D9%84%D8%B4%D8%A7%D8%B4%D8%A9%20%D9%A2%D9%A0%D9%A2%D9%A6-%D9%A0%D9%A6-%D9%A1%D9%A8%20%D9%81%D9%8A%20%D9%A9.%D9%A3%D9%A0.%D9%A2%D9%A2%C2%A0%D9%85.png" alt="شعار الصندوق" class="h-32 md:h-48 w-auto object-contain mb-6 rounded-2xl shadow-sm bg-white p-2">
             <h1 class="text-4xl md:text-5xl font-bold text-gray-800 mb-4">صندوق الأعمال التطوعية</h1>
-            <p class="text-xl text-gray-600 mb-8 max-w-2xl">
-                معاً نصنع الأثر. ساهم معنا بباقات تبدأ من ريال واحد شهرياً لدعم المشاريع الخيرية والمجتمعية.
-            </p>
+            <p class="text-xl text-gray-600 mb-8 max-w-2xl">معاً نصنع الأثر. ساهم معنا بباقات تبدأ من ريال واحد شهرياً لدعم المشاريع الخيرية والمجتمعية.</p>
             <div class="flex flex-col md:flex-row flex-wrap justify-center gap-4 w-full md:w-auto px-4">
                 <button onclick="navigate('register')" class="bg-amber-500 hover:bg-amber-600 text-white px-8 py-3 rounded-lg font-bold text-lg flex justify-center items-center gap-2 transition-all shadow-md">
                     <i class="fas fa-user-plus"></i> انضم إلينا الآن
                 </button>
                 <button onclick="navigate('public')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-lg font-bold text-lg flex justify-center items-center gap-2 transition-all shadow-md">
-                    <i class="fas fa-users"></i> شركاء الأجر والمساهمون
+                    <i class="fas fa-globe"></i> البوابة العامة والمساهمون
                 </button>
                 <button onclick="navigate('login')" class="bg-white border-2 border-emerald-600 text-emerald-700 hover:bg-emerald-50 px-8 py-3 rounded-lg font-bold text-lg flex justify-center items-center gap-2 transition-all">
                     <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
@@ -145,15 +138,12 @@
                     <label class="block text-gray-700 font-bold mb-2">الرقم السري</label>
                     <input required type="password" id="log-pass" class="w-full border border-gray-300 p-3 rounded-lg outline-none focus:ring-2 focus:ring-emerald-500" />
                 </div>
-                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">
-                    دخول
-                </button>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">دخول</button>
             </form>
         </div>
 
         <!-- 4. Admin Dashboard -->
         <div id="view-admin" class="view-section hidden flex flex-col md:flex-row gap-6 min-h-[80vh]">
-            <!-- Sidebar -->
             <div class="w-full md:w-64 bg-white rounded-xl shadow-sm p-4 h-fit border border-gray-100 print:hidden">
                 <h3 class="font-bold text-gray-800 mb-4 px-2">لوحة الإدارة</h3>
                 <ul class="space-y-1">
@@ -165,30 +155,47 @@
                     <li><button onclick="switchAdminTab('challenges')" id="tab-challenges" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50"><i class="fas fa-exclamation-triangle w-5"></i> التحديات</button></li>
                 </ul>
             </div>
-
-            <!-- Admin Content -->
-            <div class="flex-1 bg-white rounded-xl shadow-sm p-6 border border-gray-100 print:border-none print:shadow-none print:p-0" id="admin-content">
-                <!-- Rendered Dynamically -->
-            </div>
+            <div class="flex-1 bg-white rounded-xl shadow-sm p-6 border border-gray-100 print:border-none print:shadow-none print:p-0" id="admin-content"></div>
         </div>
 
         <!-- 5. User Dashboard -->
         <div id="view-user" class="view-section hidden space-y-8">
-            <div class="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-8 text-white shadow-lg border-b-4 border-amber-400">
-                <h2 class="text-3xl font-bold mb-2">أهلاً بك، <span id="user-display-name"></span></h2>
-                <p class="opacity-90">شكراً لمساهمتك معنا في صندوق الأعمال التطوعية. باقتك الحالية: <span id="user-display-pkg" class="font-bold text-amber-200"></span></p>
+            <div class="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-6 md:p-8 text-white shadow-lg border-b-4 border-amber-400">
+                <div class="flex justify-between items-start flex-wrap gap-4">
+                    <div>
+                        <h2 class="text-3xl font-bold mb-2">أهلاً بك، <span id="user-display-name"></span></h2>
+                        <p class="opacity-90">باقتك الحالية: <span id="user-display-pkg" class="font-bold text-amber-200"></span></p>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="bg-white/20 p-3 rounded-lg text-center backdrop-blur-sm">
+                            <p class="text-sm opacity-80 mb-1">أعضاء الصندوق</p>
+                            <p class="text-2xl font-bold" id="user-stats-members">0</p>
+                        </div>
+                        <div class="bg-white/20 p-3 rounded-lg text-center backdrop-blur-sm">
+                            <p class="text-sm opacity-80 mb-1">محصلات الشهر</p>
+                            <p class="text-2xl font-bold" id="user-stats-funds">0 <span class="text-sm font-normal">ريال</span></p>
+                        </div>
+                    </div>
+                </div>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="md:col-span-2 space-y-6">
+                    <!-- Voting Projects -->
+                    <div id="voting-section-container" class="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-xl shadow-sm border border-amber-200 hidden">
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-amber-800"><i class="fas fa-vote-yea"></i> مشاريع تنتظر قرارك (للتصويت)</h3>
+                        <div id="user-voting-list" class="space-y-4"></div>
+                    </div>
+
                     <!-- Projects -->
                     <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800"><i class="fas fa-briefcase text-amber-500"></i> مشاريع الصندوق</h3>
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800"><i class="fas fa-briefcase text-emerald-600"></i> مشاريع وخطط الصندوق</h3>
                         <div id="user-projects-list" class="space-y-4"></div>
                     </div>
+
                     <!-- News -->
                     <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800"><i class="fas fa-newspaper text-blue-600"></i> آخر الأخبار</h3>
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800"><i class="fas fa-newspaper text-blue-600"></i> الأخبار والمستجدات</h3>
                         <div id="user-news-list" class="space-y-4"></div>
                     </div>
                 </div>
@@ -199,34 +206,44 @@
                         <h3 class="text-lg font-bold mb-4 flex items-center gap-2 text-red-800"><i class="fas fa-exclamation-triangle"></i> تحديات نواجهها</h3>
                         <div id="user-challenges-list" class="space-y-3"></div>
                     </div>
-                    <!-- Stats -->
-                    <div class="bg-gray-50 p-6 rounded-xl border border-gray-200 text-center">
-                        <i class="fas fa-heartbeat text-4xl text-gray-400 mb-3"></i>
-                        <h3 class="font-bold text-gray-700">الشفافية مبدأنا</h3>
-                        <p class="text-sm text-gray-500 mt-2">نشاركك كل التحديثات إيماناً منا بأن مساهمتك تصنع الفارق.</p>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- 6. Public View (Contributors List) -->
-        <div id="view-public" class="view-section hidden max-w-5xl mx-auto space-y-6">
-            <div class="text-center mb-8">
-                <h2 class="text-3xl font-bold text-emerald-700 mb-2">شركاء الأجر والمساهمون</h2>
-                <p class="text-gray-600">نعتز بكل من ساهم معنا في الصندوق. انضم إليهم لتكن جزءاً من الأثر!</p>
+        <!-- 6. Public View (Comprehensive Portal) -->
+        <div id="view-public" class="view-section hidden max-w-5xl mx-auto space-y-8">
+            <div class="text-center mb-8 bg-white p-8 rounded-xl shadow-sm border border-emerald-100">
+                <h2 class="text-3xl font-bold text-emerald-700 mb-4">البوابة العامة للصندوق</h2>
+                <p class="text-gray-600 text-lg mb-6">نشارككم أخبارنا ومشاريعنا إيماناً بمبدأ الشفافية. تفضل بالاطلاع وانضم لقافلة الخير.</p>
+                <button onclick="navigate('register')" class="bg-amber-500 hover:bg-amber-600 text-white px-8 py-3 rounded-lg font-bold text-lg flex items-center justify-center gap-2 mx-auto transition-all shadow-md">
+                    <i class="fas fa-hand-holding-heart"></i> كن واحداً منا وسجل الآن
+                </button>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-emerald-100">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="font-bold text-gray-800 text-xl">المساهمون الفاعلون: <span id="public-members-count" class="text-amber-500 font-black">0</span></h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Public News -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-blue-700"><i class="fas fa-bullhorn"></i> أخبار الصندوق</h3>
+                    <div id="public-news-list" class="space-y-4"></div>
                 </div>
-                <div id="public-members-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <!-- سيتم تعبئتها برمجياً من الفايربيس -->
+
+                <!-- Public Projects -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-emerald-700"><i class="fas fa-rocket"></i> المشاريع والخطط</h3>
+                    <div id="public-projects-list" class="space-y-4"></div>
                 </div>
-                <div class="mt-10 text-center">
-                    <button onclick="navigate('register')" class="bg-amber-500 hover:bg-amber-600 text-white px-8 py-3 rounded-lg font-bold text-lg flex items-center justify-center gap-2 mx-auto transition-all shadow-md">
-                        <i class="fas fa-hand-holding-heart"></i> كن واحداً منهم وسجل الآن
-                    </button>
-                </div>
+            </div>
+
+            <!-- Public Challenges -->
+            <div class="bg-red-50 p-6 rounded-xl border border-red-100">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-red-800"><i class="fas fa-exclamation-triangle"></i> تحديات نتجاوزها معاً</h3>
+                <div id="public-challenges-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+            </div>
+
+            <!-- Public Members -->
+            <div class="bg-emerald-50/50 p-6 rounded-xl shadow-sm border border-emerald-100 mt-8">
+                <h3 class="font-bold text-gray-800 text-2xl mb-6 text-center">شركاء الأجر والمساهمون (<span id="public-members-count" class="text-amber-600">0</span>)</h3>
+                <div id="public-members-list" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
             </div>
         </div>
 
@@ -243,7 +260,6 @@
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, query, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // Firebase Configuration Handler
         const userProvidedConfig = {
             apiKey: "AIzaSyBC1BB2MCOM1hr8MU734tr0V-E9pmE5IBg",
             authDomain: "waqfdata-d4a01.firebaseapp.com",
@@ -255,55 +271,34 @@
         };
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : userProvidedConfig;
         
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Path Handler for Canvas Compatibility vs Real Project
         const isCanvasEnv = typeof __app_id !== 'undefined';
         const canvasAppId = isCanvasEnv ? __app_id : 'default-app';
         
         const getColPath = (colName) => {
-            if (isCanvasEnv) {
-                return `artifacts/${canvasAppId}/public/data/${colName}`;
-            }
+            if (isCanvasEnv) return `artifacts/${canvasAppId}/public/data/${colName}`;
             return colName;
         };
 
-        // --- State Management ---
         let state = {
-            view: 'home',
-            user: null, 
-            volunteers: [],
-            news: [],
-            projects: [],
-            challenges: [],
-            adminTab: 'requests',
-            selectedMonth: `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`,
-            financeFilter: 'all' // 'all', 'paid', 'unpaid'
+            view: 'home', user: null, volunteers: [], news: [], projects: [], challenges: [],
+            adminTab: 'requests', selectedMonth: `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`, financeFilter: 'all'
         };
 
-        // DOM Elements
         const el = {
-            navActions: document.getElementById('nav-actions'),
-            views: document.querySelectorAll('.view-section'),
-            adminContent: document.getElementById('admin-content'),
-            modal: document.getElementById('custom-modal'),
-            modalIcon: document.getElementById('modal-icon'),
-            modalTitle: document.getElementById('modal-title'),
-            modalMessage: document.getElementById('modal-message'),
-            modalActions: document.getElementById('modal-actions'),
+            navActions: document.getElementById('nav-actions'), views: document.querySelectorAll('.view-section'),
+            adminContent: document.getElementById('admin-content'), modal: document.getElementById('custom-modal'),
+            modalIcon: document.getElementById('modal-icon'), modalTitle: document.getElementById('modal-title'),
+            modalMessage: document.getElementById('modal-message'), modalActions: document.getElementById('modal-actions'),
         };
 
         document.getElementById('current-year').textContent = new Date().getFullYear();
 
-        // --- Modal & Utility Functions ---
         window.showModal = (type, title, message, onConfirm = null) => {
-            el.modalTitle.textContent = title;
-            el.modalMessage.textContent = message;
-            el.modalActions.innerHTML = '';
-            
+            el.modalTitle.textContent = title; el.modalMessage.textContent = message; el.modalActions.innerHTML = '';
             if (type === 'error') {
                 el.modalIcon.innerHTML = '<i class="fas fa-times-circle text-red-500"></i>';
                 el.modalActions.innerHTML = `<button onclick="closeModal()" class="bg-red-500 text-white px-6 py-2 rounded-lg font-bold">حسناً</button>`;
@@ -312,54 +307,34 @@
                 el.modalActions.innerHTML = `<button onclick="closeModal()" class="bg-green-500 text-white px-6 py-2 rounded-lg font-bold">تم</button>`;
             } else if (type === 'confirm') {
                 el.modalIcon.innerHTML = '<i class="fas fa-question-circle text-blue-500"></i>';
-                
-                const btnConfirm = document.createElement('button');
-                btnConfirm.className = "bg-blue-600 text-white px-6 py-2 rounded-lg font-bold";
-                btnConfirm.textContent = "نعم، متأكد";
-                btnConfirm.onclick = () => { closeModal(); if(onConfirm) onConfirm(); };
-                
-                const btnCancel = document.createElement('button');
-                btnCancel.className = "bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-bold";
-                btnCancel.textContent = "إلغاء";
-                btnCancel.onclick = closeModal;
-
-                el.modalActions.appendChild(btnConfirm);
-                el.modalActions.appendChild(btnCancel);
+                const btnConfirm = document.createElement('button'); btnConfirm.className = "bg-blue-600 text-white px-6 py-2 rounded-lg font-bold";
+                btnConfirm.textContent = "نعم، متأكد"; btnConfirm.onclick = () => { closeModal(); if(onConfirm) onConfirm(); };
+                const btnCancel = document.createElement('button'); btnCancel.className = "bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-bold";
+                btnCancel.textContent = "إلغاء"; btnCancel.onclick = closeModal;
+                el.modalActions.appendChild(btnConfirm); el.modalActions.appendChild(btnCancel);
             }
             el.modal.classList.remove('hidden');
         };
 
         window.closeModal = () => el.modal.classList.add('hidden');
 
-        // تحديث الباقات بناءً على نوع الاشتراك مع خيار (مبلغ آخر)
         window.updatePackageOptions = (typeId, pkgId, customId) => {
             const type = document.getElementById(typeId).value;
             const pkgSelect = document.getElementById(pkgId);
             const customInput = document.getElementById(customId);
-            
             const monthlyOptions = [1, 2, 3, 5, 10, 20, 50];
             const yearlyOptions = [12, 20, 50, 100];
             const options = type === 'monthly' ? monthlyOptions : yearlyOptions;
-            
             pkgSelect.innerHTML = options.map(val => `<option value="${val}">${val} ريال</option>`).join('');
             pkgSelect.innerHTML += `<option value="custom">مبلغ آخر...</option>`;
-            
             if(customInput) handlePackageChange(pkgId, customId);
         };
 
-        // إظهار/إخفاء حقل المبلغ المخصص
         window.handlePackageChange = (pkgId, customId) => {
-            const pkgSelect = document.getElementById(pkgId);
-            const customInput = document.getElementById(customId);
+            const pkgSelect = document.getElementById(pkgId); const customInput = document.getElementById(customId);
             if (!customInput) return;
-
-            if (pkgSelect.value === 'custom') {
-                customInput.classList.remove('hidden');
-                customInput.required = true;
-            } else {
-                customInput.classList.add('hidden');
-                customInput.required = false;
-            }
+            if (pkgSelect.value === 'custom') { customInput.classList.remove('hidden'); customInput.required = true; } 
+            else { customInput.classList.add('hidden'); customInput.required = false; }
         };
 
         const sendWhatsApp = (phone, message) => {
@@ -368,12 +343,9 @@
             window.open(url, '_blank');
         };
 
-        window.setFinanceFilter = (filter) => {
-            state.financeFilter = filter;
-            renderAdmin();
-        };
+        window.setFinanceFilter = (filter) => { state.financeFilter = filter; renderAdmin(); };
 
-        // نظام الطباعة المخصص
+        // نظام الطباعة
         window.printReport = (type) => {
             const container = document.getElementById('print-container');
             const month = state.selectedMonth;
@@ -381,78 +353,37 @@
             const paidUsers = approvedUsers.filter(u => u.payments && u.payments[month]);
             const unpaidUsers = approvedUsers.filter(u => !u.payments || !u.payments[month]);
 
-            let targetUsers = approvedUsers;
-            let reportTitle = "التقرير الشامل لصندوق الأعمال التطوعية";
-            if (type === 'paid') {
-                targetUsers = paidUsers;
-                reportTitle = "تقرير الدافعين لصندوق الأعمال التطوعية";
-            } else if (type === 'unpaid') {
-                targetUsers = unpaidUsers;
-                reportTitle = "تقرير المتأخرين عن الدفع (غير الدافعين)";
-            }
+            let targetUsers = approvedUsers; let reportTitle = "التقرير الشامل لصندوق الأعمال التطوعية";
+            if (type === 'paid') { targetUsers = paidUsers; reportTitle = "تقرير الدافعين لصندوق الأعمال التطوعية"; } 
+            else if (type === 'unpaid') { targetUsers = unpaidUsers; reportTitle = "تقرير المتأخرين عن الدفع (غير الدافعين)"; }
 
             const totalM = targetUsers.filter(u=>u.type==='monthly').reduce((s,u)=>s+Number(u.package),0);
-            const totalY = targetUsers.filter(u=>u.type==='yearly').reduce((s,u)=>s+Number(u.package),0);
-            
             const collected = (type === 'unpaid') ? 0 : paidUsers.reduce((s,u) => s+Number(u.package), 0);
 
             let html = `
-                <div style="direction: rtl; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #000; padding: 20px;">
+                <div style="direction: rtl; font-family: 'Cairo', sans-serif; color: #000; padding: 20px;">
                     <div style="text-align: center; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 15px;">
                         <h1 style="font-size: 28px; font-weight: bold; margin-bottom: 5px;">${reportTitle}</h1>
-                        <p style="font-size: 18px;">التقرير المالي لشهر: <span dir="ltr" style="font-weight: bold;">${month}</span> | إجمالي الأعضاء في هذا التقرير: <span style="font-weight:bold;">${targetUsers.length}</span></p>
+                        <p style="font-size: 18px;">لشهر: <span dir="ltr">${month}</span> | إجمالي الأعضاء: <span>${targetUsers.length}</span></p>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 30px;">
-                        <div style="border: 1px solid #000; padding: 15px; border-radius: 8px; width: 32%; text-align: center;">
-                            <h3 style="font-size: 14px; margin-bottom: 5px; color: #333;">المشتركين (ضمن التقرير)</h3>
-                            <p style="font-size: 22px; font-weight: bold;">${targetUsers.length}</p>
-                        </div>
-                        <div style="border: 1px solid #000; padding: 15px; border-radius: 8px; width: 32%; text-align: center;">
-                            <h3 style="font-size: 14px; margin-bottom: 5px; color: #333;">المبالغ المحصلة</h3>
-                            <p style="font-size: 22px; font-weight: bold;">${collected} ريال</p>
-                        </div>
-                        <div style="border: 1px solid #000; padding: 15px; border-radius: 8px; width: 32%; text-align: center;">
-                            <h3 style="font-size: 14px; margin-bottom: 5px; color: #333;">المتوقع شهرياً من هؤلاء الأعضاء</h3>
-                            <p style="font-size: 22px; font-weight: bold;">${totalM} ريال</p>
-                        </div>
+                        <div style="border: 1px solid #000; padding: 15px; border-radius: 8px; width: 32%; text-align: center;"><h3 style="font-size: 14px; margin-bottom: 5px;">المشتركين</h3><p style="font-size: 22px; font-weight: bold;">${targetUsers.length}</p></div>
+                        <div style="border: 1px solid #000; padding: 15px; border-radius: 8px; width: 32%; text-align: center;"><h3 style="font-size: 14px; margin-bottom: 5px;">المبالغ المحصلة</h3><p style="font-size: 22px; font-weight: bold;">${collected} ريال</p></div>
+                        <div style="border: 1px solid #000; padding: 15px; border-radius: 8px; width: 32%; text-align: center;"><h3 style="font-size: 14px; margin-bottom: 5px;">المتوقع شهرياً</h3><p style="font-size: 22px; font-weight: bold;">${totalM} ريال</p></div>
                     </div>
                     <table style="width: 100%; border-collapse: collapse; text-align: right;" border="1">
-                        <thead>
-                            <tr style="background-color: #f3f4f6;">
-                                <th style="padding: 12px; border: 1px solid #000;">الاسم</th>
-                                <th style="padding: 12px; border: 1px solid #000;">الهاتف</th>
-                                <th style="padding: 12px; border: 1px solid #000;">الباقة</th>
-                                <th style="padding: 12px; border: 1px solid #000;">النوع</th>
-                                <th style="padding: 12px; border: 1px solid #000;">حالة الدفع</th>
-                            </tr>
-                        </thead>
+                        <thead><tr style="background-color: #f3f4f6;"><th style="padding: 12px; border: 1px solid #000;">الاسم</th><th style="padding: 12px; border: 1px solid #000;">الهاتف</th><th style="padding: 12px; border: 1px solid #000;">الباقة</th><th style="padding: 12px; border: 1px solid #000;">النوع</th><th style="padding: 12px; border: 1px solid #000;">الحالة</th></tr></thead>
                         <tbody>
             `;
-
             targetUsers.forEach(u => {
                 const isPaid = u.payments && u.payments[month];
-                html += `
-                            <tr>
-                                <td style="padding: 10px; border: 1px solid #000;">${u.name}</td>
-                                <td style="padding: 10px; border: 1px solid #000;" dir="ltr">${u.phone}</td>
-                                <td style="padding: 10px; border: 1px solid #000; font-weight: bold;">${u.package} ريال</td>
-                                <td style="padding: 10px; border: 1px solid #000;">${u.type==='monthly'?'شهري':'سنوي'}</td>
-                                <td style="padding: 10px; border: 1px solid #000; font-weight: bold; color: ${isPaid ? '#047857' : '#dc2626'};">${isPaid ? 'تم الدفع ✓' : 'لم يدفع ✗'}</td>
-                            </tr>
-                `;
+                html += `<tr><td style="padding: 10px; border: 1px solid #000;">${u.name}</td><td style="padding: 10px; border: 1px solid #000;" dir="ltr">${u.phone}</td><td style="padding: 10px; border: 1px solid #000; font-weight: bold;">${u.package} ريال</td><td style="padding: 10px; border: 1px solid #000;">${u.type==='monthly'?'شهري':'سنوي'}</td><td style="padding: 10px; border: 1px solid #000; font-weight: bold; color: ${isPaid ? '#047857' : '#dc2626'};">${isPaid ? 'تم الدفع ✓' : 'لم يدفع ✗'}</td></tr>`;
             });
-
-            html += `
-                        </tbody>
-                    </table>
-                </div>
-            `;
-            
+            html += `</tbody></table></div>`;
             container.innerHTML = html;
             setTimeout(() => { window.print(); }, 100);
         };
 
-        // --- Navigation ---
         window.navigate = (viewName) => {
             state.view = viewName;
             el.views.forEach(v => v.classList.add('hidden'));
@@ -461,7 +392,7 @@
             
             if(viewName === 'admin') renderAdmin();
             if(viewName === 'user') renderUserDash();
-            if(viewName === 'public') renderPublicMembers();
+            if(viewName === 'public') renderPublicPortal();
             if(viewName === 'register') {
                 document.getElementById('register-form-container').classList.remove('hidden');
                 document.getElementById('register-success').classList.add('hidden');
@@ -480,125 +411,94 @@
             el.navActions.innerHTML = html;
         };
 
-        window.logout = () => {
-            state.user = null;
-            navigate('home');
-        };
+        window.logout = () => { state.user = null; navigate('home'); };
 
-        // --- Firebase Init & Listeners ---
         const setupFirebase = async () => {
             try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
+                else await signInAnonymously(auth);
 
                 onSnapshot(collection(db, getColPath('volunteers')), (snapshot) => {
                     state.volunteers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                     if(state.view === 'admin') renderAdmin();
-                    if(state.view === 'public') renderPublicMembers();
+                    if(state.view === 'user') renderUserDash();
+                    if(state.view === 'public') renderPublicPortal();
                     document.getElementById('count-pending').textContent = state.volunteers.filter(v=>v.status==='pending').length;
-                }, (err) => console.error("Error fetching volunteers:", err));
-
+                });
                 onSnapshot(collection(db, getColPath('news')), (snapshot) => {
                     state.news = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => b.timestamp - a.timestamp);
                     if(state.view === 'admin') renderAdmin();
                     if(state.view === 'user') renderUserDash();
-                }, (err) => console.error("Error fetching news:", err));
-
+                    if(state.view === 'public') renderPublicPortal();
+                });
                 onSnapshot(collection(db, getColPath('projects')), (snapshot) => {
                     state.projects = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => b.timestamp - a.timestamp);
                     if(state.view === 'admin') renderAdmin();
                     if(state.view === 'user') renderUserDash();
-                }, (err) => console.error("Error fetching projects:", err));
-
+                    if(state.view === 'public') renderPublicPortal();
+                });
                 onSnapshot(collection(db, getColPath('challenges')), (snapshot) => {
                     state.challenges = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => b.timestamp - a.timestamp);
                     if(state.view === 'admin') renderAdmin();
                     if(state.view === 'user') renderUserDash();
-                }, (err) => console.error("Error fetching challenges:", err));
-
-            } catch(e) {
-                console.error("Firebase setup failed:", e);
-                showModal('error', 'خطأ في الاتصال', 'تعذر الاتصال بقاعدة البيانات. تأكد من إعدادات الفايربيس والصلاحيات.');
-            }
+                    if(state.view === 'public') renderPublicPortal();
+                });
+            } catch(e) { console.error("Firebase setup failed:", e); showModal('error', 'خطأ في الاتصال', 'تعذر الاتصال بقاعدة البيانات.'); }
         };
 
-        // --- Forms & Actions ---
+        // --- Forms Actions ---
         document.getElementById('form-register').onsubmit = async (e) => {
             e.preventDefault();
-            const btn = e.target.querySelector('button');
-            btn.disabled = true; btn.innerHTML = 'جاري الإرسال...';
-            
-            // قراءة الباقة (سواء من الخيارات أو من حقل "مبلغ آخر")
+            const btn = e.target.querySelector('button'); btn.disabled = true; btn.innerHTML = 'جاري الإرسال...';
             let selectedPkg = document.getElementById('reg-package').value;
-            if (selectedPkg === 'custom') {
-                selectedPkg = document.getElementById('reg-custom-package').value;
-            }
+            if (selectedPkg === 'custom') selectedPkg = document.getElementById('reg-custom-package').value;
 
             try {
                 await addDoc(collection(db, getColPath('volunteers')), {
-                    name: document.getElementById('reg-name').value,
-                    phone: document.getElementById('reg-phone').value,
-                    type: document.getElementById('reg-type').value,
-                    package: selectedPkg,
-                    status: 'pending',
-                    password: null,
-                    payments: {},
-                    timestamp: Date.now()
+                    name: document.getElementById('reg-name').value, phone: document.getElementById('reg-phone').value,
+                    type: document.getElementById('reg-type').value, package: selectedPkg,
+                    status: 'pending', password: null, payments: {}, timestamp: Date.now()
                 });
-                document.getElementById('register-form-container').classList.add('hidden');
-                document.getElementById('register-success').classList.remove('hidden');
-                e.target.reset();
-                updatePackageOptions('reg-type', 'reg-package', 'reg-custom-package'); // Reset UI
-            } catch(err) {
-                showModal('error', 'خطأ', 'حدث خطأ أثناء الإرسال. يرجى المحاولة لاحقاً.');
-                console.error(err);
-            } finally {
-                btn.disabled = false; btn.innerHTML = 'إرسال طلب الاشتراك';
-            }
+                document.getElementById('register-form-container').classList.add('hidden'); document.getElementById('register-success').classList.remove('hidden');
+                e.target.reset(); updatePackageOptions('reg-type', 'reg-package', 'reg-custom-package');
+            } catch(err) { showModal('error', 'خطأ', 'حدث خطأ. المحاولة لاحقاً.'); } 
+            finally { btn.disabled = false; btn.innerHTML = 'إرسال طلب الاشتراك'; }
         };
 
         document.getElementById('form-login').onsubmit = (e) => {
             e.preventDefault();
-            const phone = document.getElementById('log-phone').value;
-            const pass = document.getElementById('log-pass').value;
+            const phone = document.getElementById('log-phone').value; const pass = document.getElementById('log-pass').value;
             const errDiv = document.getElementById('login-error');
 
             if (phone === 'admin' && pass === 'admin') {
-                state.user = { role: 'admin', name: 'مدير النظام' };
-                errDiv.classList.add('hidden');
-                e.target.reset();
-                navigate('admin');
-                return;
+                state.user = { role: 'admin', name: 'مدير النظام' }; errDiv.classList.add('hidden');
+                e.target.reset(); navigate('admin'); return;
             }
-
             const user = state.volunteers.find(u => u.phone === phone && u.password === pass && u.status === 'approved');
-            if (user) {
-                state.user = { role: 'user', ...user };
-                errDiv.classList.add('hidden');
-                e.target.reset();
-                navigate('user');
-            } else {
-                errDiv.textContent = 'رقم الهاتف أو الرقم السري غير صحيح، أو أن حسابك قيد المراجعة.';
-                errDiv.classList.remove('hidden');
-            }
+            if (user) { state.user = { role: 'user', ...user }; errDiv.classList.add('hidden'); e.target.reset(); navigate('user'); } 
+            else { errDiv.textContent = 'رقم الهاتف أو الرقم السري غير صحيح.'; errDiv.classList.remove('hidden'); }
         };
 
-        // --- Admin Logic ---
-        window.switchAdminTab = (tab) => {
-            state.adminTab = tab;
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`tab-${tab}`).classList.add('active');
-            renderAdmin();
+        // --- User Voting ---
+        window.castVote = async (projectId) => {
+            if(!state.user || state.user.role !== 'user') return;
+            const project = state.projects.find(p => p.id === projectId);
+            const votes = project.votes || [];
+            if(votes.includes(state.user.id)) return;
+            
+            try {
+                const newVotes = [...votes, state.user.id];
+                await updateDoc(doc(db, getColPath('projects'), projectId), { votes: newVotes });
+                showModal('success', 'تم التصويت', 'شكراً لمشاركتك في صنع القرار!');
+            } catch(e) { showModal('error', 'خطأ', 'تعذر تسجيل التصويت.'); }
         };
+
+        // --- Admin Dashboard Logic ---
+        window.switchAdminTab = (tab) => { state.adminTab = tab; document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); document.getElementById(`tab-${tab}`).classList.add('active'); renderAdmin(); };
 
         const renderAdmin = () => {
             if(state.view !== 'admin') return;
-            const tab = state.adminTab;
-            let html = '';
-
+            const tab = state.adminTab; let html = '';
             const approvedUsers = state.volunteers.filter(u => u.status === 'approved');
             const pendingUsers = state.volunteers.filter(u => u.status === 'pending');
 
@@ -610,17 +510,13 @@
                     pendingUsers.forEach(u => {
                         html += `
                         <div class="bg-gray-50 p-4 rounded-lg flex flex-col md:flex-row justify-between items-center gap-4 border border-gray-200">
-                            <div>
-                                <h4 class="font-bold text-lg">${u.name}</h4>
-                                <p class="text-sm text-gray-600">هاتف: <span dir="ltr">${u.phone}</span> | الباقة: ${u.package} ريال (${u.type === 'monthly' ? 'شهري' : 'سنوي'})</p>
-                            </div>
+                            <div><h4 class="font-bold text-lg">${u.name}</h4><p class="text-sm text-gray-600">هاتف: <span dir="ltr">${u.phone}</span> | الباقة: ${u.package} ريال (${u.type === 'monthly' ? 'شهري' : 'سنوي'})</p></div>
                             <div class="flex gap-2 w-full md:w-auto">
-                                <button onclick="adminAction('approve', '${u.id}')" class="flex-1 md:flex-none bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-1"><i class="fas fa-check-circle"></i> قبول</button>
-                                <button onclick="adminAction('reject', '${u.id}')" class="flex-1 md:flex-none bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-1"><i class="fas fa-times-circle"></i> رفض</button>
+                                <button onclick="adminAction('approve', '${u.id}')" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-1"><i class="fas fa-check-circle"></i> قبول</button>
+                                <button onclick="adminAction('reject', '${u.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-1"><i class="fas fa-times-circle"></i> رفض</button>
                             </div>
                         </div>`;
-                    });
-                    html += `</div>`;
+                    }); html += `</div>`;
                 }
             } 
             else if (tab === 'members') {
@@ -630,13 +526,10 @@
                     <h3 class="font-bold mb-4 text-emerald-800 flex items-center gap-2"><i class="fas fa-plus"></i> إضافة عضو جديد مباشرة</h3>
                     <form onsubmit="adminAction('addMember', event)" class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start">
                         <input required type="text" id="new-mem-name" placeholder="الاسم الثلاثي" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500" />
-                        <input required type="tel" id="new-mem-phone" placeholder="رقم الهاتف (مع مفتاح الدولة 968...)" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500" />
+                        <input required type="tel" id="new-mem-phone" placeholder="رقم الهاتف" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500" />
                         <select id="new-mem-type" onchange="updatePackageOptions('new-mem-type', 'new-mem-pkg', 'new-mem-custom-pkg')" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="monthly">شهري</option><option value="yearly">سنوي</option></select>
-                        <div>
-                            <select id="new-mem-pkg" onchange="handlePackageChange('new-mem-pkg', 'new-mem-custom-pkg')" class="w-full p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="1">1 ريال</option><option value="2">2 ريال</option><option value="3">3 ريال</option><option value="5">5 ريال</option><option value="10">10 ريال</option><option value="20">20 ريال</option><option value="50">50 ريال</option><option value="custom">مبلغ آخر...</option></select>
-                            <input type="number" id="new-mem-custom-pkg" class="hidden w-full p-3 mt-2 border border-emerald-300 rounded-lg outline-none focus:border-emerald-500" placeholder="أدخل المبلغ (ريال)" min="1" />
-                        </div>
-                        <button type="submit" class="md:col-span-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-bold transition-colors">إضافة العضو وإرسال التفاصيل عبر واتساب</button>
+                        <div><select id="new-mem-pkg" onchange="handlePackageChange('new-mem-pkg', 'new-mem-custom-pkg')" class="w-full p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="1">1 ريال</option><option value="2">2 ريال</option><option value="3">3 ريال</option><option value="5">5 ريال</option><option value="10">10 ريال</option><option value="20">20 ريال</option><option value="50">50 ريال</option><option value="custom">مبلغ آخر...</option></select><input type="number" id="new-mem-custom-pkg" class="hidden w-full p-3 mt-2 border border-emerald-300 rounded-lg outline-none focus:border-emerald-500" placeholder="أدخل المبلغ" min="1" /></div>
+                        <button type="submit" class="md:col-span-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-bold">إضافة وإرسال عبر واتساب</button>
                     </form>
                 </div>
                 <h3 class="font-bold mb-4 text-gray-800">الأعضاء الحاليين (${approvedUsers.length})</h3>
@@ -644,30 +537,21 @@
                 approvedUsers.forEach(u => {
                     html += `
                     <div class="bg-white p-4 rounded-lg flex flex-col md:flex-row justify-between items-center gap-4 border border-gray-200 shadow-sm">
-                        <div>
-                            <h4 class="font-bold text-lg">${u.name}</h4>
-                            <p class="text-sm text-gray-600">هاتف: <span dir="ltr">${u.phone}</span> | الباقة: ${u.package} ريال (${u.type === 'monthly' ? 'شهري' : 'سنوي'})</p>
-                        </div>
-                        <button onclick="adminAction('delete', '${u.id}')" class="bg-red-50 hover:bg-red-500 hover:text-white text-red-600 px-4 py-2 rounded-lg text-sm font-bold flex items-center justify-center gap-1 transition-colors"><i class="fas fa-user-minus"></i> حذف العضو</button>
+                        <div><h4 class="font-bold text-lg">${u.name}</h4><p class="text-sm text-gray-600">هاتف: <span dir="ltr">${u.phone}</span> | الباقة: ${u.package} ريال (${u.type === 'monthly' ? 'شهري' : 'سنوي'})</p></div>
+                        <button onclick="adminAction('delete', '${u.id}')" class="bg-red-50 hover:bg-red-500 hover:text-white text-red-600 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-1"><i class="fas fa-user-minus"></i> حذف العضو</button>
                     </div>`;
-                });
-                html += `</div>`;
+                }); html += `</div>`;
             }
             else if (tab === 'finances') {
                 const paidUsers = approvedUsers.filter(u => u.payments && u.payments[state.selectedMonth]);
                 const unpaidUsers = approvedUsers.filter(u => !u.payments || !u.payments[state.selectedMonth]);
-
-                const totalM = approvedUsers.filter(u=>u.type==='monthly').reduce((s,u)=>s+Number(u.package),0);
-                const totalY = approvedUsers.filter(u=>u.type==='yearly').reduce((s,u)=>s+Number(u.package),0);
                 const collected = paidUsers.reduce((s,u) => s+Number(u.package), 0);
-
                 let displayUsers = approvedUsers;
                 if (state.financeFilter === 'paid') displayUsers = paidUsers;
                 if (state.financeFilter === 'unpaid') displayUsers = unpaidUsers;
 
                 html += `
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b pb-4">
-                    <h2 class="text-2xl font-bold text-gray-800">المالية والتقارير</h2>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b pb-4"><h2 class="text-2xl font-bold text-gray-800">المالية والتقارير</h2>
                     <div class="flex flex-wrap gap-2 mt-4 md:mt-0 print:hidden">
                         <input type="month" id="month-picker" value="${state.selectedMonth}" onchange="updateMonth(this.value)" class="border border-gray-300 rounded-lg px-3 py-2 outline-none font-bold text-gray-700"/>
                         <button onclick="printReport('all')" class="bg-gray-800 hover:bg-gray-900 text-white px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-1"><i class="fas fa-print"></i> شامل</button>
@@ -675,25 +559,20 @@
                         <button onclick="printReport('unpaid')" class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-sm font-bold flex items-center gap-1"><i class="fas fa-print"></i> المتأخرين</button>
                     </div>
                 </div>
-                
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
                     <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-100"><h3 class="text-emerald-800 text-sm font-bold mb-1">المشتركين الفاعلين</h3><p class="text-2xl font-black text-emerald-600">${approvedUsers.length}</p></div>
                     <div class="bg-green-50 p-4 rounded-xl border border-green-100"><h3 class="text-green-800 text-sm font-bold mb-1">عدد الدافعين</h3><p class="text-2xl font-black text-green-600">${paidUsers.length}</p></div>
                     <div class="bg-red-50 p-4 rounded-xl border border-red-100"><h3 class="text-red-800 text-sm font-bold mb-1">عدد المتأخرين</h3><p class="text-2xl font-black text-red-600">${unpaidUsers.length}</p></div>
                     <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-100"><h3 class="text-yellow-800 text-sm font-bold mb-1">المُحصّل هذا الشهر</h3><p class="text-2xl font-black text-yellow-600">${collected} <span class="text-sm">ريال</span></p></div>
-                    <div class="bg-blue-50 p-4 rounded-xl border border-blue-100 print:hidden"><h3 class="text-blue-800 text-sm font-bold mb-1">المتوقع شهرياً</h3><p class="text-2xl font-black text-blue-600">${totalM} <span class="text-sm">ريال</span></p></div>
-                    <div class="bg-purple-50 p-4 rounded-xl border border-purple-100 print:hidden"><h3 class="text-purple-800 text-sm font-bold mb-1">المتوقع سنوياً</h3><p class="text-2xl font-black text-purple-600">${totalY} <span class="text-sm">ريال</span></p></div>
                 </div>
-                
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
                     <div class="flex bg-gray-100 p-1 rounded-lg">
-                        <button onclick="setFinanceFilter('all')" class="px-4 py-2 rounded-md text-sm font-bold transition-colors ${state.financeFilter === 'all' ? 'bg-white shadow text-gray-800' : 'text-gray-600 hover:bg-gray-200'}">الكل (${approvedUsers.length})</button>
-                        <button onclick="setFinanceFilter('paid')" class="px-4 py-2 rounded-md text-sm font-bold transition-colors ${state.financeFilter === 'paid' ? 'bg-white shadow text-green-700' : 'text-gray-600 hover:bg-gray-200'}">الدافعين (${paidUsers.length})</button>
-                        <button onclick="setFinanceFilter('unpaid')" class="px-4 py-2 rounded-md text-sm font-bold transition-colors ${state.financeFilter === 'unpaid' ? 'bg-white shadow text-red-700' : 'text-gray-600 hover:bg-gray-200'}">المتأخرين (${unpaidUsers.length})</button>
+                        <button onclick="setFinanceFilter('all')" class="px-4 py-2 rounded-md text-sm font-bold ${state.financeFilter === 'all' ? 'bg-white shadow text-gray-800' : 'text-gray-600'}">الكل (${approvedUsers.length})</button>
+                        <button onclick="setFinanceFilter('paid')" class="px-4 py-2 rounded-md text-sm font-bold ${state.financeFilter === 'paid' ? 'bg-white shadow text-green-700' : 'text-gray-600'}">الدافعين (${paidUsers.length})</button>
+                        <button onclick="setFinanceFilter('unpaid')" class="px-4 py-2 rounded-md text-sm font-bold ${state.financeFilter === 'unpaid' ? 'bg-white shadow text-red-700' : 'text-gray-600'}">المتأخرين (${unpaidUsers.length})</button>
                     </div>
-                    <button onclick="adminAction('markAllPaid')" class="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 px-4 py-2 rounded-lg text-sm font-bold print:hidden transition-colors">تعيين الكل كـ مدفوع</button>
+                    <button onclick="adminAction('markAllPaid')" class="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 px-4 py-2 rounded-lg text-sm font-bold">تعيين الكل كـ مدفوع</button>
                 </div>
-                
                 <div class="overflow-x-auto"><table class="w-full text-right border-collapse">
                     <thead><tr class="bg-gray-100"><th class="p-3 border-b">الاسم</th><th class="p-3 border-b">الهاتف</th><th class="p-3 border-b">الرقم السري</th><th class="p-3 border-b">الباقة</th><th class="p-3 border-b">النوع</th><th class="p-3 border-b">حالة الدفع</th><th class="p-3 border-b print:hidden">إجراءات</th></tr></thead>
                     <tbody>`;
@@ -702,17 +581,13 @@
                     html += `<tr class="border-b border-gray-100 hover:bg-gray-50">
                         <td class="p-3">${u.name}</td><td class="p-3" dir="ltr">${u.phone}</td><td class="p-3"><span class="font-mono font-bold bg-gray-100 px-2 py-1 rounded">${u.password}</span></td>
                         <td class="p-3 font-bold">${u.package} ريال</td><td class="p-3">${u.type==='monthly'?'شهري':'سنوي'}</td>
-                        <td class="p-3">
-                            <button onclick="adminAction('togglePayment', '${u.id}')" class="print:hidden px-3 py-1.5 rounded-full text-xs font-bold w-24 transition-colors ${isPaid?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${isPaid?'تم الدفع ✓':'لم يدفع ✗'}</button>
-                            <span class="hidden print:inline font-bold ${isPaid?'text-green-700':'text-red-700'}">${isPaid?'تم الدفع ✓':'لم يدفع ✗'}</span>
-                        </td>
+                        <td class="p-3"><button onclick="adminAction('togglePayment', '${u.id}')" class="px-3 py-1.5 rounded-full text-xs font-bold w-24 ${isPaid?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${isPaid?'تم الدفع ✓':'لم يدفع ✗'}</button></td>
                         <td class="p-3 print:hidden flex flex-col gap-2">
-                            ${!isPaid ? `<button onclick="adminAction('remind', '${u.id}')" class="bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-blue-100 transition-colors">إرسال تذكير</button>` : ''}
-                            <button onclick="adminAction('newPass', '${u.id}')" class="bg-gray-100 text-gray-700 border border-gray-300 px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-gray-200 transition-colors">رقم سري جديد</button>
+                            ${!isPaid ? `<button onclick="adminAction('remind', '${u.id}')" class="bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1.5 rounded-lg text-xs font-bold">إرسال تذكير</button>` : ''}
+                            <button onclick="adminAction('newPass', '${u.id}')" class="bg-gray-100 text-gray-700 border border-gray-300 px-3 py-1.5 rounded-lg text-xs font-bold">رقم سري جديد</button>
                         </td>
                     </tr>`;
-                });
-                html += `</tbody></table></div>`;
+                }); html += `</tbody></table></div>`;
             }
             else if (['news', 'projects', 'challenges'].includes(tab)) {
                 const titles = { news: 'الأخبار', projects: 'المشاريع', challenges: 'التحديات' };
@@ -720,9 +595,12 @@
                 html += `<div class="bg-emerald-50/50 p-5 rounded-xl border border-emerald-100 mb-6"><h3 class="font-bold mb-4 text-emerald-800">إضافة جديد</h3><form onsubmit="adminAction('addDoc', event, '${tab}')" class="space-y-3">`;
                 
                 if(tab === 'news') {
-                    html += `<input id="f-title" required type="text" placeholder="عنوان الخبر" class="w-full p-3 border rounded-lg"/><textarea id="f-desc" required placeholder="تفاصيل الخبر" class="w-full p-3 border rounded-lg min-h-[100px]"></textarea><input id="f-image-url" type="url" placeholder="رابط الصورة من جوجل كلاود أو أي موقع آخر (اختياري)" class="w-full p-3 border rounded-lg text-left" dir="ltr" />`;
+                    html += `<input id="f-title" required type="text" placeholder="عنوان الخبر" class="w-full p-3 border rounded-lg"/><textarea id="f-desc" required placeholder="تفاصيل الخبر" class="w-full p-3 border rounded-lg min-h-[100px]"></textarea>
+                    <select id="f-visibility" class="w-full p-3 border rounded-lg"><option value="public">عام (مرئي للجميع)</option><option value="private">حصري للمشتركين</option></select>
+                    <input id="f-image-url" type="url" placeholder="رابط الصورة (اختياري)" class="w-full p-3 border rounded-lg text-left" dir="ltr" />`;
                 } else if(tab === 'projects') {
-                    html += `<input id="f-title" required type="text" placeholder="اسم المشروع" class="w-full p-3 border rounded-lg"/><textarea id="f-desc" required placeholder="وصف المشروع" class="w-full p-3 border rounded-lg min-h-[100px]"></textarea><select id="f-type" class="w-full p-3 border rounded-lg"><option value="current">حالي</option><option value="future">مستقبلي</option></select>`;
+                    html += `<input id="f-title" required type="text" placeholder="اسم المشروع" class="w-full p-3 border rounded-lg"/><textarea id="f-desc" required placeholder="وصف المشروع" class="w-full p-3 border rounded-lg min-h-[100px]"></textarea>
+                    <select id="f-type" class="w-full p-3 border rounded-lg"><option value="current">حالي</option><option value="future">مستقبلي</option><option value="voting">مقترح للتصويت</option></select>`;
                 } else if (tab === 'challenges') {
                     html += `<input id="f-title" required type="text" placeholder="عنوان التحدي" class="w-full p-3 border rounded-lg"/><textarea id="f-desc" required placeholder="وصف التحدي" class="w-full p-3 border rounded-lg min-h-[100px]"></textarea>`;
                 }
@@ -731,191 +609,175 @@
                 html += `<div class="space-y-4">`;
                 state[tab].forEach(item => {
                     let extra = '';
-                    if(tab === 'news') extra = `<span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full mr-2">${item.date}</span>`;
-                    if(tab === 'projects') extra = `<span class="text-xs font-bold px-2 py-1 rounded-full mr-2 ${item.type==='current'?'bg-blue-100 text-blue-800':'bg-orange-100 text-orange-800'}">${item.type==='current'?'حالي':'مستقبلي'}</span>`;
-                    
+                    if(tab === 'news') extra = `<span class="text-xs ${item.visibility==='private'?'bg-amber-100 text-amber-800':'bg-blue-100 text-blue-800'} px-2 py-1 rounded-full mr-2">${item.visibility==='private'?'حصري':'عام'}</span> <span class="text-xs text-gray-400">${item.date}</span>`;
+                    if(tab === 'projects') {
+                        let typeLabel = item.type==='voting' ? 'للتصويت' : (item.type==='current'?'حالي':'مستقبلي');
+                        extra = `<span class="text-xs font-bold px-2 py-1 rounded-full mr-2 ${item.type==='voting'?'bg-purple-100 text-purple-800':(item.type==='current'?'bg-blue-100 text-blue-800':'bg-orange-100 text-orange-800')}">${typeLabel}</span>`;
+                        if(item.type === 'voting') extra += ` <span class="text-xs font-bold text-gray-500">(${item.votes?.length || 0} أصوات)</span>`;
+                    }
                     html += `
                     <div class="p-5 bg-white rounded-xl border ${tab==='challenges'?'border-red-100':'border-gray-100'} flex justify-between items-start gap-4 shadow-sm">
                         <div class="w-full">
-                            <h4 class="font-bold text-lg mb-1 ${tab==='challenges'?'text-red-800':''}">${item.title} ${extra}</h4>
-                            <p class="${tab==='challenges'?'text-red-600':'text-gray-600'}">${item.content || item.description}</p>
+                            <h4 class="font-bold text-lg mb-1">${item.title} ${extra}</h4>
+                            <p class="text-gray-600">${item.content || item.description}</p>
                             ${item.imageUrl ? `<img src="${item.imageUrl}" class="mt-4 max-h-48 rounded-lg object-cover border border-gray-200" onerror="this.src='https://placehold.co/600x400/f87171/ffffff?text=رابط+الصورة+غير+صحيح'" />` : ''}
                         </div>
                         <button onclick="adminAction('deleteDoc', null, '${tab}', '${item.id}')" class="shrink-0 text-red-500 bg-red-50 hover:bg-red-500 hover:text-white p-2.5 rounded-lg"><i class="fas fa-times-circle text-xl"></i></button>
                     </div>`;
-                });
-                html += `</div>`;
+                }); html += `</div>`;
             }
-
             el.adminContent.innerHTML = html;
         };
 
-        // --- Public Dashboard Logic ---
-        const renderPublicMembers = () => {
-            if(state.view !== 'public') return;
-            const approvedUsers = state.volunteers.filter(u => u.status === 'approved');
-            document.getElementById('public-members-count').textContent = approvedUsers.length;
-            
-            const listContainer = document.getElementById('public-members-list');
-            if(approvedUsers.length === 0) {
-                listContainer.innerHTML = '<p class="col-span-full text-center text-gray-500 py-6">لا يوجد مساهمين حالياً، كن أنت الأول!</p>';
-                return;
-            }
-
-            listContainer.innerHTML = approvedUsers.map(u => `
-                <div class="border border-emerald-100 bg-white p-4 rounded-xl flex items-center gap-4 hover:shadow-md transition-shadow">
-                    <div class="bg-amber-100 text-amber-600 w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl shrink-0">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-gray-800">${u.name}</h4>
-                        <p class="text-sm text-gray-600 font-medium mt-1">مساهم بـ <span class="text-emerald-700">${u.package} ريال</span> (${u.type === 'monthly' ? 'شهري' : 'سنوي'})</p>
-                    </div>
-                </div>
-            `).join('');
-        };
-
-
         window.adminAction = async (action, arg1, arg2, arg3) => {
             const getU = (id) => state.volunteers.find(u => u.id === id);
-            
-            // إضافة نص معلومات الدفع الموحد لإدراجه في الرسائل
-            const paymentInfoMsg = `\n\n📌 *تنبيه هام:* يرجى إرسال إيصال الدفع (سكرين شوت) إلى نفس رقم هاتف التحويل أدناه بعد إتمام التحويل.\n*حسابات الصندوق:*\n🏦 بنك مسقط: 0367014374790018\n🏦 بنك نزوى: 009107664001\n📱 تحويل بالهاتف: 99219505 (باسم علي)`;
+            const paymentInfoMsg = `\n\n📌 *تنبيه هام:* يرجى إرسال إيصال الدفع (سكرين شوت) إلى نفس رقم هاتف التحويل أدناه.\n🏦 بنك مسقط: 0367014374790018\n🏦 بنك نزوى: 00910107664001\n📱 تحويل بالهاتف: 99219505 (باسم علي)`;
 
             try {
                 if(action === 'approve') {
-                    const u = getU(arg1);
-                    const pass = Math.floor(1000 + Math.random() * 9000).toString();
+                    const u = getU(arg1); const pass = Math.floor(1000 + Math.random() * 9000).toString();
                     await updateDoc(doc(db, getColPath('volunteers'), u.id), { status: 'approved', password: pass });
-                    const msg = `مرحباً ${u.name}،\n\nنشكرك من القلب لانضمامك ومساهمتك معنا في صندوق الأعمال التطوعية. نسأل الله أن يبارك في رزقك ويتقبل منك هذا العمل الصالح ويجعله في ميزان حسناتك. 🌿\n\nتفاصيل اشتراكك:\n- الباقة: ${u.package} ريال\n- النوع: ${u.type==='monthly'?'شهري':'سنوي'}${paymentInfoMsg}\n\nندعوك لزيارة موقعنا لمتابعة أحدث أخبار ومشاريع الصندوق بكل شفافية:\n🌐 رابط الموقع: https://akmoman.github.io/sondok/\n📱 رقم الهاتف (للدخول): ${u.phone}\n🔑 الرقم السري: ${pass}`;
-                    sendWhatsApp(u.phone, msg);
-                    showModal('success', 'تم القبول', 'تم قبول المشترك وتوليد الرقم السري بنجاح.');
+                    sendWhatsApp(u.phone, `مرحباً ${u.name}،\n\nتم قبول اشتراكك في صندوق الأعمال التطوعية 🌿\nالباقة: ${u.package} ريال (${u.type==='monthly'?'شهري':'سنوي'})${paymentInfoMsg}\n\nرابط الموقع: https://akmoman.github.io/sondok/\nرقم الهاتف: ${u.phone}\nالرقم السري: ${pass}`);
+                    showModal('success', 'تم القبول', 'تم قبول المشترك.');
                 }
                 else if (action === 'reject' || action === 'delete') {
-                    showModal('confirm', 'تأكيد الحذف', 'هل أنت متأكد من حذف هذا العضو نهائياً؟', async () => {
-                        await deleteDoc(doc(db, getColPath('volunteers'), arg1));
-                    });
+                    showModal('confirm', 'تأكيد الحذف', 'هل أنت متأكد من الحذف؟', async () => { await deleteDoc(doc(db, getColPath('volunteers'), arg1)); });
                 }
                 else if (action === 'addMember') {
-                    arg1.preventDefault();
-                    const pass = Math.floor(1000 + Math.random() * 9000).toString();
-                    
-                    let selectedPkg = document.getElementById('new-mem-pkg').value;
-                    if (selectedPkg === 'custom') {
-                        selectedPkg = document.getElementById('new-mem-custom-pkg').value;
-                    }
-
-                    const data = {
-                        name: document.getElementById('new-mem-name').value,
-                        phone: document.getElementById('new-mem-phone').value,
-                        type: document.getElementById('new-mem-type').value,
-                        package: selectedPkg,
-                        status: 'approved', password: pass, payments: {}, timestamp: Date.now()
-                    };
+                    arg1.preventDefault(); const pass = Math.floor(1000 + Math.random() * 9000).toString();
+                    let selectedPkg = document.getElementById('new-mem-pkg').value; if (selectedPkg === 'custom') selectedPkg = document.getElementById('new-mem-custom-pkg').value;
+                    const data = { name: document.getElementById('new-mem-name').value, phone: document.getElementById('new-mem-phone').value, type: document.getElementById('new-mem-type').value, package: selectedPkg, status: 'approved', password: pass, payments: {}, timestamp: Date.now() };
                     await addDoc(collection(db, getColPath('volunteers')), data);
-                    const msg = `مرحباً ${data.name}،\n\nنشكرك من القلب لانضمامك ومساهمتك معنا في صندوق الأعمال التطوعية. جزاك الله خيراً وبارك لك في مالك وأهلك. 🌿\n\nتفاصيل اشتراكك:\n- الباقة: ${data.package} ريال (${data.type==='monthly'?'شهري':'سنوي'})${paymentInfoMsg}\n\nندعوك لتسجيل الدخول إلى موقع الصندوق لمتابعة أين تذهب مساهمتك وللإطلاع على أحدث المشاريع:\n🌐 رابط الموقع: https://akmoman.github.io/sondok/\n📱 رقم الهاتف (للدخول): ${data.phone}\n🔑 الرقم السري: ${pass}`;
-                    sendWhatsApp(data.phone, msg);
-                    arg1.target.reset();
-                    updatePackageOptions('new-mem-type', 'new-mem-pkg', 'new-mem-custom-pkg'); // Reset ui
-                    showModal('success', 'تمت الإضافة', 'تم إضافة العضو بنجاح وتجهيز رسالة الواتساب.');
+                    sendWhatsApp(data.phone, `مرحباً ${data.name}،\n\nتم إضافتك في صندوق الأعمال التطوعية 🌿\nالباقة: ${data.package} ريال (${data.type==='monthly'?'شهري':'سنوي'})${paymentInfoMsg}\n\nرابط الموقع: https://akmoman.github.io/sondok/\nرقم الهاتف: ${data.phone}\nالرقم السري: ${pass}`);
+                    arg1.target.reset(); updatePackageOptions('new-mem-type', 'new-mem-pkg', 'new-mem-custom-pkg'); showModal('success', 'تمت الإضافة', 'تم إضافة العضو بنجاح.');
                 }
                 else if (action === 'togglePayment') {
-                    const u = getU(arg1);
-                    const isPaid = u.payments && u.payments[state.selectedMonth];
-                    const newPayments = { ...(u.payments || {}), [state.selectedMonth]: !isPaid };
-                    await updateDoc(doc(db, getColPath('volunteers'), u.id), { payments: newPayments });
+                    const u = getU(arg1); const isPaid = u.payments && u.payments[state.selectedMonth];
+                    await updateDoc(doc(db, getColPath('volunteers'), u.id), { payments: { ...(u.payments || {}), [state.selectedMonth]: !isPaid } });
                 }
                 else if (action === 'markAllPaid') {
-                    showModal('confirm', 'تعيين الكل', `هل أنت متأكد من تعيين الجميع كـ "تم الدفع" لشهر ${state.selectedMonth}؟`, async () => {
-                        const batch = []; 
-                        const toUpdate = state.volunteers.filter(u => u.status === 'approved');
-                        for(let u of toUpdate) {
-                            const newPayments = { ...(u.payments || {}), [state.selectedMonth]: true };
-                            await updateDoc(doc(db, getColPath('volunteers'), u.id), { payments: newPayments });
-                        }
+                    showModal('confirm', 'تعيين الكل', `تعيين الجميع كـ "تم الدفع" لشهر ${state.selectedMonth}؟`, async () => {
+                        for(let u of state.volunteers.filter(u => u.status === 'approved')) { await updateDoc(doc(db, getColPath('volunteers'), u.id), { payments: { ...(u.payments || {}), [state.selectedMonth]: true } }); }
                         showModal('success', 'اكتملت العملية', 'تم تحديث سجلات الدفع للجميع.');
                     });
                 }
                 else if (action === 'remind') {
-                    const u = getU(arg1);
-                    sendWhatsApp(u.phone, `مرحباً ${u.name}،\n\nنسأل الله أن تكون بأتم الصحة والعافية.\nنود تذكيرك بلطف بتسديد مساهمتك في صندوق الأعمال التطوعية لشهر ${state.selectedMonth}.\nمبلغ الباقة: ${u.package} ريال.${paymentInfoMsg}\n\nبمساهمتك نستمر في العطاء، جزاك الله خيراً! 🌿\nيمكنك دائماً متابعة مشاريع الصندوق عبر: https://akmoman.github.io/sondok/`);
+                    const u = getU(arg1); sendWhatsApp(u.phone, `مرحباً ${u.name}،\n\nنود تذكيرك بلطف بتسديد مساهمتك في صندوق الأعمال التطوعية لشهر ${state.selectedMonth}.\nمبلغ الباقة: ${u.package} ريال.${paymentInfoMsg}\n\nhttps://akmoman.github.io/sondok/`);
                 }
                 else if (action === 'newPass') {
-                    const u = getU(arg1);
-                    const pass = Math.floor(1000 + Math.random() * 9000).toString();
+                    const u = getU(arg1); const pass = Math.floor(1000 + Math.random() * 9000).toString();
                     await updateDoc(doc(db, getColPath('volunteers'), u.id), { password: pass });
-                    sendWhatsApp(u.phone, `مرحباً ${u.name}،\n\nتم إصدار رقم سري جديد لحسابك في صندوق الأعمال التطوعية بناءً على طلبك.\n\nتفضل بالدخول للموقع ومتابعة مستجداتنا:\n🌐 رابط الموقع: https://akmoman.github.io/sondok/\n📱 رقم الهاتف: ${u.phone}\n🔑 الرقم السري الجديد: ${pass}`);
+                    sendWhatsApp(u.phone, `مرحباً ${u.name}،\n\nالرقم السري الجديد: ${pass}\nhttps://akmoman.github.io/sondok/`);
                 }
                 else if (action === 'addDoc') {
-                    arg1.preventDefault();
-                    const tab = arg2;
-                    const data = {
-                        title: document.getElementById('f-title').value,
-                        timestamp: Date.now()
-                    };
-                    if(tab === 'news') { 
-                        data.content = document.getElementById('f-desc').value; 
-                        data.date = new Date().toISOString().split('T')[0]; 
-                        const imgUrl = document.getElementById('f-image-url').value;
-                        if(imgUrl) data.imageUrl = imgUrl;
-                    }
-                    if(tab === 'projects') { data.description = document.getElementById('f-desc').value; data.type = document.getElementById('f-type').value; }
+                    arg1.preventDefault(); const tab = arg2;
+                    const data = { title: document.getElementById('f-title').value, timestamp: Date.now() };
+                    if(tab === 'news') { data.content = document.getElementById('f-desc').value; data.date = new Date().toISOString().split('T')[0]; data.visibility = document.getElementById('f-visibility').value; const imgUrl = document.getElementById('f-image-url').value; if(imgUrl) data.imageUrl = imgUrl; }
+                    if(tab === 'projects') { data.description = document.getElementById('f-desc').value; data.type = document.getElementById('f-type').value; data.votes = []; }
                     if(tab === 'challenges') { data.description = document.getElementById('f-desc').value; }
-                    
-                    await addDoc(collection(db, getColPath(tab)), data);
-                    arg1.target.reset();
+                    await addDoc(collection(db, getColPath(tab)), data); arg1.target.reset();
                 }
                 else if (action === 'deleteDoc') {
-                    showModal('confirm', 'تأكيد الحذف', 'هل أنت متأكد من الحذف؟', async () => {
-                        await deleteDoc(doc(db, getColPath(arg2), arg3));
-                    });
+                    showModal('confirm', 'تأكيد الحذف', 'هل أنت متأكد من الحذف؟', async () => { await deleteDoc(doc(db, getColPath(arg2), arg3)); });
                 }
-            } catch(e) {
-                console.error(e);
-                showModal('error', 'خطأ في العملية', 'تأكد من اتصالك بالإنترنت وصلاحيات قاعدة البيانات.');
-            }
+            } catch(e) { console.error(e); showModal('error', 'خطأ في العملية', 'تأكد من اتصالك بالإنترنت.'); }
         };
 
         // --- User Dashboard Logic ---
         const renderUserDash = () => {
             if(state.view !== 'user') return;
+            const approvedUsers = state.volunteers.filter(u => u.status === 'approved');
+            const collectedThisMonth = approvedUsers.reduce((s,u) => (u.payments && u.payments[state.selectedMonth]) ? s+Number(u.package) : s, 0);
+
             document.getElementById('user-display-name').textContent = state.user.name;
             document.getElementById('user-display-pkg').textContent = `${state.user.package} ريال (${state.user.type==='monthly'?'شهري':'سنوي'})`;
+            document.getElementById('user-stats-members').textContent = approvedUsers.length;
+            document.getElementById('user-stats-funds').innerHTML = `${collectedThisMonth} <span class="text-sm font-normal">ريال</span>`;
             
-            // Render Projects
-            document.getElementById('user-projects-list').innerHTML = state.projects.map(p => `
+            // Render Voting Projects
+            const votingProjects = state.projects.filter(p => p.type === 'voting');
+            const votingContainer = document.getElementById('voting-section-container');
+            if(votingProjects.length > 0) {
+                votingContainer.classList.remove('hidden');
+                document.getElementById('user-voting-list').innerHTML = votingProjects.map(p => {
+                    const hasVoted = (p.votes || []).includes(state.user.id);
+                    return `
+                    <div class="border border-amber-200 bg-white p-4 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div><h4 class="font-bold text-lg text-amber-900">${p.title}</h4><p class="text-amber-800 text-sm mt-1">${p.description}</p></div>
+                        <button onclick="castVote('${p.id}')" class="shrink-0 font-bold px-4 py-2 rounded-lg transition-colors ${hasVoted ? 'bg-amber-100 text-amber-700 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600 text-white shadow-md'}" ${hasVoted ? 'disabled' : ''}>
+                            ${hasVoted ? '<i class="fas fa-check"></i> تم التصويت' : '<i class="fas fa-vote-yea"></i> صوّت للمقترح'}
+                        </button>
+                    </div>`;
+                }).join('');
+            } else { votingContainer.classList.add('hidden'); }
+
+            // Render Standard Projects
+            document.getElementById('user-projects-list').innerHTML = state.projects.filter(p => p.type !== 'voting').map(p => `
                 <div class="border border-gray-100 p-4 rounded-lg">
                     <div class="flex justify-between items-start mb-2">
                         <h4 class="font-bold text-lg text-emerald-800">${p.title}</h4>
                         <span class="text-xs px-2 py-1 rounded-full ${p.type==='current'?'bg-blue-100 text-blue-800':'bg-orange-100 text-orange-800'}">${p.type==='current'?'مشروع حالي':'خطة مستقبلية'}</span>
-                    </div>
-                    <p class="text-gray-600 text-sm">${p.description}</p>
+                    </div><p class="text-gray-600 text-sm">${p.description}</p>
                 </div>
-            `).join('');
+            `).join('') || '<p class="text-gray-500 text-sm">لا توجد مشاريع مضافة حالياً.</p>';
 
-            // Render News
+            // Render All News (Public & Private)
             document.getElementById('user-news-list').innerHTML = state.news.map(n => `
-                <div class="border-r-4 border-blue-500 bg-gray-50 p-4 rounded-l-lg overflow-hidden">
+                <div class="border-r-4 ${n.visibility==='private'?'border-amber-400 bg-amber-50':'border-blue-500 bg-gray-50'} p-4 rounded-l-lg overflow-hidden relative">
+                    ${n.visibility==='private'?'<span class="absolute top-4 left-4 bg-amber-200 text-amber-800 text-xs font-bold px-2 py-1 rounded">حصري 🌟</span>':''}
                     <span class="text-xs text-gray-400 mb-1 block">${n.date}</span>
-                    <h4 class="font-bold mb-1">${n.title}</h4>
-                    <p class="text-gray-600 text-sm">${n.content}</p>
+                    <h4 class="font-bold mb-1">${n.title}</h4><p class="text-gray-600 text-sm">${n.content}</p>
                     ${n.imageUrl ? `<img src="${n.imageUrl}" alt="صورة الخبر" class="w-full h-auto mt-3 rounded-lg object-cover border border-gray-200 shadow-sm" onerror="this.src='https://placehold.co/600x400/f87171/ffffff?text=رابط+الصورة+غير+صحيح'" />` : ''}
                 </div>
-            `).join('');
+            `).join('') || '<p class="text-gray-500 text-sm">لا توجد أخبار حالياً.</p>';
 
             // Render Challenges
             document.getElementById('user-challenges-list').innerHTML = state.challenges.map(c => `
-                <div>
-                    <h4 class="font-bold text-red-700 text-sm">${c.title}</h4>
-                    <p class="text-red-600 text-xs mt-1">${c.description}</p>
-                </div>
-            `).join('');
+                <div><h4 class="font-bold text-red-700 text-sm">${c.title}</h4><p class="text-red-600 text-xs mt-1">${c.description}</p></div>
+            `).join('') || '<p class="text-gray-500 text-sm">لا توجد تحديات مدونة حالياً.</p>';
         };
 
-        // Initial setup
+        // --- Public Portal Logic ---
+        const renderPublicPortal = () => {
+            if(state.view !== 'public') return;
+            const approvedUsers = state.volunteers.filter(u => u.status === 'approved');
+            
+            // Members List
+            document.getElementById('public-members-count').textContent = approvedUsers.length;
+            document.getElementById('public-members-list').innerHTML = approvedUsers.length > 0 ? approvedUsers.map(u => `
+                <div class="border border-emerald-100 bg-white p-4 rounded-xl flex items-center gap-4 hover:shadow-md transition-shadow">
+                    <div class="bg-amber-100 text-amber-600 w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl shrink-0"><i class="fas fa-user"></i></div>
+                    <div><h4 class="font-bold text-gray-800">${u.name}</h4><p class="text-sm text-gray-600 font-medium mt-1">مساهم بـ <span class="text-emerald-700">${u.package} ريال</span> (${u.type === 'monthly' ? 'شهري' : 'سنوي'})</p></div>
+                </div>
+            `).join('') : '<p class="col-span-full text-center text-gray-500 py-6">لا يوجد مساهمين حالياً، كن أنت الأول!</p>';
+
+            // Public News Only
+            const publicNews = state.news.filter(n => n.visibility !== 'private');
+            document.getElementById('public-news-list').innerHTML = publicNews.length > 0 ? publicNews.map(n => `
+                <div class="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                    <span class="text-xs text-gray-400 block mb-1">${n.date}</span>
+                    <h4 class="font-bold text-gray-800 mb-1">${n.title}</h4><p class="text-gray-600 text-sm">${n.content}</p>
+                    ${n.imageUrl ? `<img src="${n.imageUrl}" class="w-full h-auto mt-2 rounded-lg object-cover" onerror="this.style.display='none'" />` : ''}
+                </div>
+            `).join('') : '<p class="text-gray-500 text-sm">لا توجد أخبار عامة حالياً.</p>';
+
+            // Standard Projects Only
+            const stdProjects = state.projects.filter(p => p.type !== 'voting');
+            document.getElementById('public-projects-list').innerHTML = stdProjects.length > 0 ? stdProjects.map(p => `
+                <div class="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                    <h4 class="font-bold text-emerald-700 mb-1">${p.title} <span class="text-xs text-gray-500 mr-2">(${p.type==='current'?'جاري التنفيذ':'خطة مستقبلية'})</span></h4>
+                    <p class="text-gray-600 text-sm">${p.description}</p>
+                </div>
+            `).join('') : '<p class="text-gray-500 text-sm">لا توجد مشاريع مضافة حالياً.</p>';
+
+            // Challenges
+            document.getElementById('public-challenges-list').innerHTML = state.challenges.length > 0 ? state.challenges.map(c => `
+                <div class="bg-white p-4 rounded-lg border border-red-100 shadow-sm"><h4 class="font-bold text-red-700 text-sm mb-1">${c.title}</h4><p class="text-red-600 text-xs">${c.description}</p></div>
+            `).join('') : '<p class="col-span-full text-gray-500 text-sm text-center">لا توجد تحديات مدونة حالياً.</p>';
+        };
+
         setupFirebase();
-        renderNav();
-        document.getElementById('tab-requests').classList.add('active'); 
+        window.updateMonth = (val) => { state.selectedMonth = val; renderAdmin(); };
     </script>
 </body>
 </html>
