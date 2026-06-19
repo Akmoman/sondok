@@ -165,7 +165,7 @@
 
         <!-- 4. Admin Dashboard -->
         <div id="view-admin" class="view-section hidden flex flex-col md:flex-row gap-6 min-h-[80vh]">
-            <div class="w-full md:w-64 bg-white rounded-xl shadow-sm p-4 h-fit border border-gray-100 print:hidden">
+            <div class="w-full md:w-64 bg-white rounded-xl shadow-sm p-4 h-fit border border-gray-100 print:hidden shrink-0">
                 <h3 class="font-bold text-gray-800 mb-4 px-2">لوحة الإدارة</h3>
                 <ul class="space-y-1">
                     <li><button onclick="switchAdminTab('requests')" id="tab-requests" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50"><i class="fas fa-user-plus w-5"></i> طلبات الاشتراك (<span id="count-pending">0</span>)</button></li>
@@ -173,6 +173,7 @@
                     <li><button onclick="switchAdminTab('finances')" id="tab-finances" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50"><i class="fas fa-dollar-sign w-5"></i> المالية والحسابات</button></li>
                     <li><button onclick="switchAdminTab('news')" id="tab-news" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50"><i class="fas fa-newspaper w-5"></i> إدارة الأخبار</button></li>
                     <li><button onclick="switchAdminTab('projects')" id="tab-projects" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50"><i class="fas fa-briefcase w-5"></i> المشاريع والخطط</button></li>
+                    <li><button onclick="switchAdminTab('polls')" id="tab-polls" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50"><i class="fas fa-vote-yea w-5"></i> التصويت والمقترحات</button></li>
                     <li><button onclick="switchAdminTab('challenges')" id="tab-challenges" class="tab-btn w-full flex items-center gap-3 px-4 py-3 rounded-lg text-gray-600 hover:bg-gray-50"><i class="fas fa-exclamation-triangle w-5"></i> التحديات</button></li>
                 </ul>
             </div>
@@ -202,10 +203,22 @@
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="md:col-span-2 space-y-6">
-                    <div id="voting-section-container" class="bg-gradient-to-br from-amber-50 to-orange-50 p-6 rounded-xl shadow-sm border border-amber-200 hidden">
-                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-amber-800"><i class="fas fa-vote-yea"></i> مشاريع تنتظر قرارك (للتصويت)</h3>
-                        <div id="user-voting-list" class="space-y-4"></div>
+                    <!-- Voting and Polls Section -->
+                    <div id="voting-section-container" class="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-xl shadow-sm border border-indigo-100 hidden">
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-indigo-800"><i class="fas fa-vote-yea"></i> رأيك يهمنا (التصويتات)</h3>
+                        <div id="user-polls-list" class="space-y-4"></div>
                     </div>
+
+                    <!-- Suggestions Box -->
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800"><i class="fas fa-lightbulb text-amber-500"></i> صندوق المقترحات للإدارة</h3>
+                        <form onsubmit="userAction('submitSuggestion', event)" class="space-y-3">
+                            <input required id="sugg-title" type="text" placeholder="عنوان المقترح / الفكرة" class="w-full p-3 border border-gray-200 rounded-lg outline-none focus:border-amber-500" />
+                            <textarea required id="sugg-desc" placeholder="اشرح فكرتك أو مقترحك هنا..." class="w-full p-3 border border-gray-200 rounded-lg outline-none focus:border-amber-500 min-h-[100px]"></textarea>
+                            <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-white px-6 py-2 rounded-lg font-bold transition-colors">إرسال المقترح للإدارة</button>
+                        </form>
+                    </div>
+
                     <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
                         <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800"><i class="fas fa-briefcase text-emerald-600"></i> مشاريع وخطط الصندوق</h3>
                         <div id="user-projects-list" class="space-y-4"></div>
@@ -290,14 +303,37 @@
             appId: "1:572617443091:web:99e8d08491f7bee3a1bce6",
             measurementId: "G-XBJH9JX7F8"
         };
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : userProvidedConfig;
+        
+        // منع أي خطأ برمجي عند قراءة الإعدادات
+        let firebaseConfig = userProvidedConfig;
+        try {
+            if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+                if (typeof __firebase_config === 'string') {
+                    try {
+                        firebaseConfig = JSON.parse(__firebase_config);
+                    } catch(parseError) {
+                        firebaseConfig = new Function("return " + __firebase_config)();
+                    }
+                } else {
+                    firebaseConfig = __firebase_config;
+                }
+            }
+        } catch(e) {
+            console.warn("Using default config fallback", e);
+        }
         
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        const isCanvasEnv = typeof __app_id !== 'undefined';
-        const canvasAppId = isCanvasEnv ? __app_id : 'default-app';
+        let canvasAppId = 'default-app';
+        try {
+            if (typeof __app_id !== 'undefined') {
+                canvasAppId = __app_id;
+            }
+        } catch(e) {}
+        
+        const isCanvasEnv = canvasAppId !== 'default-app';
         
         const getColPath = (colName) => {
             if (isCanvasEnv) return `artifacts/${canvasAppId}/public/data/${colName}`;
@@ -305,7 +341,7 @@
         };
 
         let state = {
-            view: 'home', user: null, volunteers: [], news: [], projects: [], challenges: [],
+            view: 'home', user: null, volunteers: [], news: [], projects: [], challenges: [], polls: [], suggestions: [],
             adminTab: 'requests', selectedMonth: `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}`, financeFilter: 'all', paymentMethodFilter: 'all'
         };
 
@@ -490,39 +526,44 @@
 
         const setupFirebase = async () => {
             try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token);
+                let initToken = null;
+                try { if (typeof __initial_auth_token !== 'undefined') initToken = __initial_auth_token; } catch(e) {}
+                
+                if (initToken) await signInWithCustomToken(auth, initToken);
                 else await signInAnonymously(auth);
+
+                const renderAll = () => {
+                    if(state.view === 'admin') renderAdmin();
+                    if(state.view === 'user') renderUserDash();
+                    if(state.view === 'public') renderPublicPortal();
+                };
 
                 onSnapshot(collection(db, getColPath('volunteers')), (snapshot) => {
                     state.volunteers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    
-                    if (initialLoad) {
-                        initialLoad = false;
-                        autoLogin();
-                    }
-
-                    if(state.view === 'admin') renderAdmin();
-                    if(state.view === 'user') renderUserDash();
-                    if(state.view === 'public') renderPublicPortal();
-                    document.getElementById('count-pending').textContent = state.volunteers.filter(v=>v.status==='pending').length;
+                    if (initialLoad) { initialLoad = false; autoLogin(); }
+                    renderAll();
+                    const pendingEl = document.getElementById('count-pending');
+                    if(pendingEl) pendingEl.textContent = state.volunteers.filter(v=>v.status==='pending').length;
                 });
                 onSnapshot(collection(db, getColPath('news')), (snapshot) => {
                     state.news = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => b.timestamp - a.timestamp);
-                    if(state.view === 'admin') renderAdmin();
-                    if(state.view === 'user') renderUserDash();
-                    if(state.view === 'public') renderPublicPortal();
+                    renderAll();
                 });
                 onSnapshot(collection(db, getColPath('projects')), (snapshot) => {
                     state.projects = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => b.timestamp - a.timestamp);
-                    if(state.view === 'admin') renderAdmin();
-                    if(state.view === 'user') renderUserDash();
-                    if(state.view === 'public') renderPublicPortal();
+                    renderAll();
                 });
                 onSnapshot(collection(db, getColPath('challenges')), (snapshot) => {
                     state.challenges = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => b.timestamp - a.timestamp);
-                    if(state.view === 'admin') renderAdmin();
-                    if(state.view === 'user') renderUserDash();
-                    if(state.view === 'public') renderPublicPortal();
+                    renderAll();
+                });
+                onSnapshot(collection(db, getColPath('polls')), (snapshot) => {
+                    state.polls = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => b.timestamp - a.timestamp);
+                    renderAll();
+                });
+                onSnapshot(collection(db, getColPath('suggestions')), (snapshot) => {
+                    state.suggestions = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => b.timestamp - a.timestamp);
+                    renderAll();
                 });
             } catch(e) { console.error("Firebase setup failed:", e); showModal('error', 'خطأ في الاتصال', 'تعذر الاتصال بقاعدة البيانات.'); }
         };
@@ -575,19 +616,6 @@
             else { errDiv.textContent = 'رقم الهاتف أو الرقم السري غير صحيح.'; errDiv.classList.remove('hidden'); }
         };
 
-        window.castVote = async (projectId) => {
-            if(!state.user || state.user.role !== 'user') return;
-            const project = state.projects.find(p => p.id === projectId);
-            const votes = project.votes || [];
-            if(votes.includes(state.user.id)) return;
-            
-            try {
-                const newVotes = [...votes, state.user.id];
-                await updateDoc(doc(db, getColPath('projects'), projectId), { votes: newVotes });
-                showModal('success', 'تم التصويت', 'شكراً لمشاركتك في صنع القرار!');
-            } catch(e) { showModal('error', 'خطأ', 'تعذر تسجيل التصويت.'); }
-        };
-
         // --- Admin Dashboard Logic ---
         window.switchAdminTab = (tab) => { state.adminTab = tab; document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); document.getElementById(`tab-${tab}`).classList.add('active'); renderAdmin(); };
 
@@ -625,7 +653,7 @@
                         <input required type="tel" id="new-mem-phone" placeholder="رقم الهاتف" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500" />
                         <select id="new-mem-type" onchange="updatePackageOptions('new-mem-type', 'new-mem-pkg', 'new-mem-custom-pkg')" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="monthly">شهري</option><option value="yearly">سنوي</option></select>
                         <div><select id="new-mem-pkg" onchange="handlePackageChange('new-mem-pkg', 'new-mem-custom-pkg')" class="w-full p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="1">1 ريال</option><option value="2">2 ريال</option><option value="3">3 ريال</option><option value="5">5 ريال</option><option value="10">10 ريال</option><option value="20">20 ريال</option><option value="50">50 ريال</option><option value="custom">مبلغ آخر...</option></select><input type="number" id="new-mem-custom-pkg" class="hidden w-full p-3 mt-2 border border-emerald-300 rounded-lg outline-none focus:border-emerald-500" placeholder="أدخل المبلغ" min="1" /></div>
-                        <select id="new-mem-payment" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="muscat">بنك مسقط</option><option value="nizwa">بنك نزوى</option><option value="phone">تحويل هاتف</option><option value="cash">نقداً لأحد أعضاء الصندوق</option></select>
+                        <select id="new-mem-payment" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="muscat">بن مسقط</option><option value="nizwa">بنك نزوى</option><option value="phone">تحويل هاتف</option><option value="cash">نقداً لأحد أعضاء الصندوق</option></select>
                         <select id="new-mem-privacy" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="public">ظهور الاسم للعامة</option><option value="anonymous">فاعل خير</option></select>
                         <button type="submit" class="md:col-span-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-bold">إضافة وإرسال عبر واتساب</button>
                     </form>
@@ -703,6 +731,72 @@
                     </tr>`;
                 }); html += `</tbody></table></div>`;
             }
+            else if (tab === 'polls') {
+                html += `<div class="flex justify-between items-center mb-6 border-b pb-4"><h2 class="text-2xl font-bold text-gray-800">التصويتات والمقترحات</h2></div>`;
+                
+                // Form to add Poll
+                html += `
+                <div class="bg-indigo-50 p-5 rounded-xl border border-indigo-100 mb-8">
+                    <h3 class="font-bold mb-4 text-indigo-800">طرح استطلاع رأي (تصويت) جديد للأعضاء</h3>
+                    <form onsubmit="adminAction('addDoc', event, 'polls')" class="space-y-3">
+                        <input id="f-poll-title" required type="text" placeholder="موضوع التصويت (مثال: هل توافق على مشروع بناء بئر؟)" class="w-full p-3 border border-gray-200 rounded-lg outline-none focus:border-indigo-500" />
+                        <textarea id="f-poll-desc" placeholder="وصف وتفاصيل إضافية عن التصويت (اختياري)" class="w-full p-3 border border-gray-200 rounded-lg outline-none focus:border-indigo-500 min-h-[80px]"></textarea>
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-lg font-bold transition-colors">نشر التصويت</button>
+                    </form>
+                </div>`;
+
+                // Polls List
+                html += `<h3 class="font-bold mb-4 text-gray-800">التصويتات الحالية (${state.polls.length})</h3><div class="space-y-6 mb-10">`;
+                state.polls.forEach(poll => {
+                    const yesVotes = Object.values(poll.voters || {}).filter(v => v.vote === 'yes').length;
+                    const noVotes = Object.values(poll.voters || {}).filter(v => v.vote === 'no').length;
+                    const neutralVotes = Object.values(poll.voters || {}).filter(v => v.vote === 'neutral').length;
+                    const totalVotes = yesVotes + noVotes + neutralVotes;
+
+                    let commentsHtml = '';
+                    Object.entries(poll.voters || {}).forEach(([uid, vData]) => {
+                        if(vData.comment) {
+                            const u = state.volunteers.find(vol => vol.id === uid);
+                            commentsHtml += `<div class="bg-gray-50 p-3 rounded text-sm mb-2"><span class="font-bold text-indigo-700">${u ? u.name : 'عضو'}:</span> ${vData.comment} <span class="text-xs bg-gray-200 px-1 rounded mr-2">صوّت بـ: ${vData.vote==='yes'?'نعم':(vData.vote==='no'?'لا':'محايد')}</span></div>`;
+                        }
+                    });
+
+                    html += `
+                    <div class="p-5 bg-white rounded-xl border border-gray-200 shadow-sm relative">
+                        <button onclick="adminAction('deleteDoc', null, 'polls', '${poll.id}')" class="absolute top-4 left-4 text-red-500 hover:text-red-700"><i class="fas fa-trash-alt"></i></button>
+                        <h4 class="font-bold text-lg mb-2 text-indigo-900">${poll.title}</h4>
+                        ${poll.description ? `<p class="text-gray-600 mb-4 text-sm">${poll.description}</p>` : ''}
+                        
+                        <div class="flex gap-4 mb-4 text-center">
+                            <div class="bg-green-50 text-green-700 p-2 rounded-lg flex-1"><p class="text-xs font-bold">نعم</p><p class="text-xl font-black">${yesVotes}</p></div>
+                            <div class="bg-red-50 text-red-700 p-2 rounded-lg flex-1"><p class="text-xs font-bold">لا</p><p class="text-xl font-black">${noVotes}</p></div>
+                            <div class="bg-gray-100 text-gray-700 p-2 rounded-lg flex-1"><p class="text-xs font-bold">محايد</p><p class="text-xl font-black">${neutralVotes}</p></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mb-2 border-b pb-2">إجمالي المصوتين: ${totalVotes}</p>
+                        ${commentsHtml ? `<div class="mt-3"><h5 class="text-sm font-bold mb-2">تعليقات المصوتين:</h5>${commentsHtml}</div>` : '<p class="text-xs text-gray-400">لا توجد تعليقات.</p>'}
+                    </div>`;
+                });
+                if(state.polls.length === 0) html += `<p class="text-gray-500">لا توجد تصويتات حالية.</p>`;
+                html += `</div>`;
+
+                // Suggestions List
+                html += `<div class="border-t pt-6"><h3 class="font-bold mb-4 text-amber-800 text-xl"><i class="fas fa-lightbulb"></i> مقترحات الأعضاء (${state.suggestions.length})</h3><div class="space-y-4">`;
+                state.suggestions.forEach(sugg => {
+                    const suggUser = state.volunteers.find(u => u.id === sugg.userId);
+                    html += `
+                    <div class="p-5 bg-amber-50 rounded-xl border border-amber-200 flex justify-between items-start gap-4">
+                        <div>
+                            <h4 class="font-bold text-lg text-amber-900 mb-1">${sugg.title}</h4>
+                            <p class="text-gray-700 text-sm mb-3 whitespace-pre-line">${sugg.description}</p>
+                            <p class="text-xs text-amber-600 font-bold"><i class="fas fa-user"></i> مقدم المقترح: ${suggUser ? suggUser.name : sugg.userName}</p>
+                        </div>
+                        <button onclick="adminAction('deleteDoc', null, 'suggestions', '${sugg.id}')" class="text-red-500 hover:text-red-700 bg-white p-2 rounded-lg"><i class="fas fa-trash-alt"></i></button>
+                    </div>`;
+                });
+                if(state.suggestions.length === 0) html += `<p class="text-gray-500">لا توجد مقترحات مرفوعة حالياً.</p>`;
+                html += `</div></div>`;
+
+            }
             else if (['news', 'projects', 'challenges'].includes(tab)) {
                 const titles = { news: 'الأخبار', projects: 'المشاريع', challenges: 'التحديات' };
                 html += `<div class="flex justify-between items-center mb-6 border-b pb-4"><h2 class="text-2xl font-bold text-gray-800">إدارة ${titles[tab]}</h2></div>`;
@@ -714,7 +808,7 @@
                     <input id="f-image-url" type="url" placeholder="رابط الصورة (اختياري)" class="w-full p-3 border rounded-lg text-left" dir="ltr" />`;
                 } else if(tab === 'projects') {
                     html += `<input id="f-title" required type="text" placeholder="اسم المشروع" class="w-full p-3 border rounded-lg"/><textarea id="f-desc" required placeholder="وصف المشروع" class="w-full p-3 border rounded-lg min-h-[100px]"></textarea>
-                    <select id="f-type" class="w-full p-3 border rounded-lg"><option value="current">حالي</option><option value="future">مستقبلي</option><option value="voting">مقترح للتصويت</option></select>`;
+                    <select id="f-type" class="w-full p-3 border rounded-lg"><option value="current">حالي</option><option value="future">مستقبلي</option></select>`;
                 } else if (tab === 'challenges') {
                     html += `<input id="f-title" required type="text" placeholder="عنوان التحدي" class="w-full p-3 border rounded-lg"/><textarea id="f-desc" required placeholder="وصف التحدي" class="w-full p-3 border rounded-lg min-h-[100px]"></textarea>`;
                 }
@@ -725,15 +819,13 @@
                     let extra = '';
                     if(tab === 'news') extra = `<span class="text-xs ${item.visibility==='private'?'bg-amber-100 text-amber-800':'bg-blue-100 text-blue-800'} px-2 py-1 rounded-full mr-2">${item.visibility==='private'?'حصري':'عام'}</span> <span class="text-xs text-gray-400">${item.date}</span>`;
                     if(tab === 'projects') {
-                        let typeLabel = item.type==='voting' ? 'للتصويت' : (item.type==='current'?'حالي':'مستقبلي');
-                        extra = `<span class="text-xs font-bold px-2 py-1 rounded-full mr-2 ${item.type==='voting'?'bg-purple-100 text-purple-800':(item.type==='current'?'bg-blue-100 text-blue-800':'bg-orange-100 text-orange-800')}">${typeLabel}</span>`;
-                        if(item.type === 'voting') extra += ` <span class="text-xs font-bold text-gray-500">(${item.votes?.length || 0} أصوات)</span>`;
+                        extra = `<span class="text-xs font-bold px-2 py-1 rounded-full mr-2 ${item.type==='current'?'bg-blue-100 text-blue-800':'bg-orange-100 text-orange-800'}">${item.type==='current'?'حالي':'مستقبلي'}</span>`;
                     }
                     html += `
                     <div class="p-5 bg-white rounded-xl border ${tab==='challenges'?'border-red-100':'border-gray-100'} flex justify-between items-start gap-4 shadow-sm">
                         <div class="w-full">
                             <h4 class="font-bold text-lg mb-1">${item.title} ${extra}</h4>
-                            <p class="text-gray-600">${item.content || item.description}</p>
+                            <p class="text-gray-600 whitespace-pre-line">${item.content || item.description}</p>
                             ${item.imageUrl ? `<img src="${item.imageUrl}" class="mt-4 max-h-48 rounded-lg object-cover border border-gray-200" onerror="this.src='https://placehold.co/600x400/f87171/ffffff?text=رابط+الصورة+غير+صحيح'" />` : ''}
                         </div>
                         <button onclick="adminAction('deleteDoc', null, '${tab}', '${item.id}')" class="shrink-0 text-red-500 bg-red-50 hover:bg-red-500 hover:text-white p-2.5 rounded-lg"><i class="fas fa-times-circle text-xl"></i></button>
@@ -792,16 +884,51 @@
                 }
                 else if (action === 'addDoc') {
                     arg1.preventDefault(); const tab = arg2;
-                    const data = { title: document.getElementById('f-title').value, timestamp: Date.now() };
+                    const data = { title: document.getElementById(tab==='polls'?'f-poll-title':'f-title').value, timestamp: Date.now() };
                     if(tab === 'news') { data.content = document.getElementById('f-desc').value; data.date = new Date().toISOString().split('T')[0]; data.visibility = document.getElementById('f-visibility').value; const imgUrl = document.getElementById('f-image-url').value; if(imgUrl) data.imageUrl = imgUrl; }
-                    if(tab === 'projects') { data.description = document.getElementById('f-desc').value; data.type = document.getElementById('f-type').value; data.votes = []; }
+                    if(tab === 'projects') { data.description = document.getElementById('f-desc').value; data.type = document.getElementById('f-type').value; }
                     if(tab === 'challenges') { data.description = document.getElementById('f-desc').value; }
+                    if(tab === 'polls') { data.description = document.getElementById('f-poll-desc').value; data.voters = {}; }
                     await addDoc(collection(db, getColPath(tab)), data); arg1.target.reset();
                 }
                 else if (action === 'deleteDoc') {
                     showModal('confirm', 'تأكيد الحذف', 'هل أنت متأكد من الحذف؟', async () => { await deleteDoc(doc(db, getColPath(arg2), arg3)); });
                 }
             } catch(e) { console.error(e); showModal('error', 'خطأ في العملية', 'تأكد من اتصالك بالإنترنت.'); }
+        };
+
+        window.userAction = async (action, arg1, arg2) => {
+            if(!state.user || state.user.role !== 'user') return;
+            try {
+                if (action === 'castVote') {
+                    const pollId = arg1;
+                    const poll = state.polls.find(p => p.id === pollId);
+                    if(poll.voters && poll.voters[state.user.id]) return; // Already voted
+
+                    const voteValue = document.querySelector(`input[name="vote_${pollId}"]:checked`)?.value;
+                    if(!voteValue) { showModal('error', 'تنبيه', 'يرجى اختيار أحد خيارات التصويت.'); return; }
+                    
+                    const comment = document.getElementById(`comment_${pollId}`)?.value || '';
+                    
+                    const newVoters = { ...(poll.voters || {}), [state.user.id]: { vote: voteValue, comment: comment } };
+                    await updateDoc(doc(db, getColPath('polls'), pollId), { voters: newVoters });
+                    showModal('success', 'تم التصويت', 'شكراً لمشاركتك وصوتك يهمنا!');
+                }
+                else if (action === 'submitSuggestion') {
+                    arg1.preventDefault();
+                    const title = document.getElementById('sugg-title').value;
+                    const desc = document.getElementById('sugg-desc').value;
+                    await addDoc(collection(db, getColPath('suggestions')), {
+                        userId: state.user.id,
+                        userName: state.user.name,
+                        title: title,
+                        description: desc,
+                        timestamp: Date.now()
+                    });
+                    arg1.target.reset();
+                    showModal('success', 'تم الإرسال', 'شكراً لك! تم رفع مقترحك للإدارة بنجاح.');
+                }
+            } catch(e) { console.error(e); showModal('error', 'خطأ', 'حدث خطأ. يرجى المحاولة لاحقاً.'); }
         };
 
         const renderUserDash = () => {
@@ -814,28 +941,58 @@
             document.getElementById('user-stats-members').textContent = approvedUsers.length;
             document.getElementById('user-stats-funds').innerHTML = `${collectedThisMonth} <span class="text-sm font-normal">ريال</span>`;
             
-            const votingProjects = state.projects.filter(p => p.type === 'voting');
-            const votingContainer = document.getElementById('voting-section-container');
-            if(votingProjects.length > 0) {
-                votingContainer.classList.remove('hidden');
-                document.getElementById('user-voting-list').innerHTML = votingProjects.map(p => {
-                    const hasVoted = (p.votes || []).includes(state.user.id);
+            // Render Polls
+            const pollsContainer = document.getElementById('voting-section-container');
+            if(state.polls.length > 0) {
+                pollsContainer.classList.remove('hidden');
+                document.getElementById('user-polls-list').innerHTML = state.polls.map(p => {
+                    const userVoteData = p.voters && p.voters[state.user.id];
+                    
+                    if (userVoteData) {
+                        const vLabel = userVoteData.vote === 'yes' ? 'نعم' : (userVoteData.vote === 'no' ? 'لا' : 'محايد');
+                        return `
+                        <div class="border border-indigo-200 bg-white p-5 rounded-lg text-center">
+                            <h4 class="font-bold text-lg text-indigo-900 mb-2">${p.title}</h4>
+                            <div class="bg-green-50 text-green-700 p-3 rounded-lg inline-block mx-auto">
+                                <i class="fas fa-check-circle mb-1 text-2xl"></i>
+                                <p class="font-bold">شكراً لتصويتك بـ (${vLabel})</p>
+                            </div>
+                        </div>`;
+                    }
+
                     return `
-                    <div class="border border-amber-200 bg-white p-4 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div><h4 class="font-bold text-lg text-amber-900">${p.title}</h4><p class="text-amber-800 text-sm mt-1">${p.description}</p></div>
-                        <button onclick="castVote('${p.id}')" class="shrink-0 font-bold px-4 py-2 rounded-lg transition-colors ${hasVoted ? 'bg-amber-100 text-amber-700 cursor-not-allowed' : 'bg-amber-500 hover:bg-amber-600 text-white shadow-md'}" ${hasVoted ? 'disabled' : ''}>
-                            ${hasVoted ? '<i class="fas fa-check"></i> تم التصويت' : '<i class="fas fa-vote-yea"></i> صوّت للمقترح'}
+                    <div class="border border-indigo-200 bg-white p-5 rounded-lg shadow-sm">
+                        <h4 class="font-bold text-lg text-indigo-900 mb-2">${p.title}</h4>
+                        ${p.description ? `<p class="text-indigo-800 text-sm mb-4">${p.description}</p>` : ''}
+                        
+                        <div class="flex flex-wrap gap-4 mb-4 justify-center">
+                            <label class="cursor-pointer flex-1 min-w-[80px]">
+                                <input type="radio" name="vote_${p.id}" value="yes" class="peer hidden" />
+                                <div class="p-3 text-center border-2 border-gray-200 rounded-lg peer-checked:border-green-500 peer-checked:bg-green-50 peer-checked:text-green-700 font-bold transition-all"><i class="fas fa-thumbs-up block text-xl mb-1"></i> نعم</div>
+                            </label>
+                            <label class="cursor-pointer flex-1 min-w-[80px]">
+                                <input type="radio" name="vote_${p.id}" value="no" class="peer hidden" />
+                                <div class="p-3 text-center border-2 border-gray-200 rounded-lg peer-checked:border-red-500 peer-checked:bg-red-50 peer-checked:text-red-700 font-bold transition-all"><i class="fas fa-thumbs-down block text-xl mb-1"></i> لا</div>
+                            </label>
+                            <label class="cursor-pointer flex-1 min-w-[80px]">
+                                <input type="radio" name="vote_${p.id}" value="neutral" class="peer hidden" />
+                                <div class="p-3 text-center border-2 border-gray-200 rounded-lg peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:text-blue-700 font-bold transition-all"><i class="fas fa-minus block text-xl mb-1"></i> محايد</div>
+                            </label>
+                        </div>
+                        <textarea id="comment_${p.id}" placeholder="اكتب تعليقاً أو مقترحاً بخصوص هذا التصويت (اختياري)..." class="w-full p-3 border border-gray-200 rounded-lg outline-none focus:border-indigo-500 text-sm min-h-[60px] mb-3"></textarea>
+                        <button onclick="userAction('castVote', '${p.id}')" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-4 py-2.5 rounded-lg transition-colors shadow-md">
+                            اعتماد التصويت
                         </button>
                     </div>`;
                 }).join('');
-            } else { votingContainer.classList.add('hidden'); }
+            } else { pollsContainer.classList.add('hidden'); }
 
             document.getElementById('user-projects-list').innerHTML = state.projects.filter(p => p.type !== 'voting').map(p => `
                 <div class="border border-gray-100 p-4 rounded-lg">
                     <div class="flex justify-between items-start mb-2">
                         <h4 class="font-bold text-lg text-emerald-800">${p.title}</h4>
                         <span class="text-xs px-2 py-1 rounded-full ${p.type==='current'?'bg-blue-100 text-blue-800':'bg-orange-100 text-orange-800'}">${p.type==='current'?'مشروع حالي':'خطة مستقبلية'}</span>
-                    </div><p class="text-gray-600 text-sm">${p.description}</p>
+                    </div><p class="text-gray-600 text-sm whitespace-pre-line">${p.description}</p>
                 </div>
             `).join('') || '<p class="text-gray-500 text-sm">لا توجد مشاريع مضافة حالياً.</p>';
 
@@ -843,13 +1000,13 @@
                 <div class="border-r-4 ${n.visibility==='private'?'border-amber-400 bg-amber-50':'border-blue-500 bg-gray-50'} p-4 rounded-l-lg overflow-hidden relative">
                     ${n.visibility==='private'?'<span class="absolute top-4 left-4 bg-amber-200 text-amber-800 text-xs font-bold px-2 py-1 rounded">حصري 🌟</span>':''}
                     <span class="text-xs text-gray-400 mb-1 block">${n.date}</span>
-                    <h4 class="font-bold mb-1">${n.title}</h4><p class="text-gray-600 text-sm">${n.content}</p>
+                    <h4 class="font-bold mb-1">${n.title}</h4><p class="text-gray-600 text-sm whitespace-pre-line">${n.content}</p>
                     ${n.imageUrl ? `<img src="${n.imageUrl}" alt="صورة الخبر" class="w-full h-auto mt-3 rounded-lg object-cover border border-gray-200 shadow-sm" onerror="this.src='https://placehold.co/600x400/f87171/ffffff?text=رابط+الصورة+غير+صحيح'" />` : ''}
                 </div>
             `).join('') || '<p class="text-gray-500 text-sm">لا توجد أخبار حالياً.</p>';
 
             document.getElementById('user-challenges-list').innerHTML = state.challenges.map(c => `
-                <div><h4 class="font-bold text-red-700 text-sm">${c.title}</h4><p class="text-red-600 text-xs mt-1">${c.description}</p></div>
+                <div><h4 class="font-bold text-red-700 text-sm">${c.title}</h4><p class="text-red-600 text-xs mt-1 whitespace-pre-line">${c.description}</p></div>
             `).join('') || '<p class="text-gray-500 text-sm">لا توجد تحديات مدونة حالياً.</p>';
 
             document.getElementById('user-members-list').innerHTML = approvedUsers.length > 0 ? approvedUsers.map(u => `
@@ -876,7 +1033,7 @@
             document.getElementById('public-news-list').innerHTML = publicNews.length > 0 ? publicNews.map(n => `
                 <div class="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
                     <span class="text-xs text-gray-400 block mb-1">${n.date}</span>
-                    <h4 class="font-bold text-gray-800 mb-1">${n.title}</h4><p class="text-gray-600 text-sm">${n.content}</p>
+                    <h4 class="font-bold text-gray-800 mb-1">${n.title}</h4><p class="text-gray-600 text-sm whitespace-pre-line">${n.content}</p>
                     ${n.imageUrl ? `<img src="${n.imageUrl}" class="w-full h-auto mt-2 rounded-lg object-cover" onerror="this.style.display='none'" />` : ''}
                 </div>
             `).join('') : '<p class="text-gray-500 text-sm">لا توجد أخبار عامة حالياً.</p>';
@@ -885,12 +1042,12 @@
             document.getElementById('public-projects-list').innerHTML = stdProjects.length > 0 ? stdProjects.map(p => `
                 <div class="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
                     <h4 class="font-bold text-emerald-700 mb-1">${p.title} <span class="text-xs text-gray-500 mr-2">(${p.type==='current'?'جاري التنفيذ':'خطة مستقبلية'})</span></h4>
-                    <p class="text-gray-600 text-sm">${p.description}</p>
+                    <p class="text-gray-600 text-sm whitespace-pre-line">${p.description}</p>
                 </div>
             `).join('') : '<p class="text-gray-500 text-sm">لا توجد مشاريع مضافة حالياً.</p>';
 
             document.getElementById('public-challenges-list').innerHTML = state.challenges.length > 0 ? state.challenges.map(c => `
-                <div class="bg-white p-4 rounded-lg border border-red-100 shadow-sm"><h4 class="font-bold text-red-700 text-sm mb-1">${c.title}</h4><p class="text-red-600 text-xs">${c.description}</p></div>
+                <div class="bg-white p-4 rounded-lg border border-red-100 shadow-sm"><h4 class="font-bold text-red-700 text-sm mb-1">${c.title}</h4><p class="text-red-600 text-xs whitespace-pre-line">${c.description}</p></div>
             `).join('') : '<p class="col-span-full text-gray-500 text-sm text-center">لا توجد تحديات مدونة حالياً.</p>';
         };
 
