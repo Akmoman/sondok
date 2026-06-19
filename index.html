@@ -73,16 +73,6 @@
                     <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
                 </button>
             </div>
-
-            <!-- إضافة قائمة المشتركين في الصفحة الرئيسية مباشرة للتحفيز -->
-            <div class="mt-16 w-full max-w-5xl px-4">
-                <div class="flex items-center justify-center gap-2 mb-6">
-                    <h3 class="font-bold text-gray-800 text-2xl border-b-2 border-emerald-200 pb-2">شركاء الأجر والمساهمون معنا (<span id="home-members-count" class="text-amber-600 font-black">0</span>)</h3>
-                </div>
-                <div id="home-members-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-right">
-                    <!-- سيتم حقن قائمة الأعضاء هنا -->
-                </div>
-            </div>
         </div>
 
         <!-- 2. Register View -->
@@ -121,11 +111,16 @@
                     </div>
                     <div>
                         <label class="block text-gray-700 font-bold mb-2">طريقة التحويل المفضلة</label>
-                        <select id="reg-payment-method" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                        <select id="reg-payment-method" onchange="showPaymentInfo(this.value)" class="w-full border border-gray-300 p-3 rounded-lg focus:ring-2 focus:ring-emerald-500 outline-none">
+                            <option value="" disabled selected>اختر طريقة التحويل...</option>
                             <option value="muscat">بنك مسقط</option>
                             <option value="nizwa">بنك نزوى</option>
                             <option value="phone">رقم الهاتف المفعل</option>
+                            <option value="cash">نقداً لأحد أعضاء الصندوق</option>
                         </select>
+                        <div id="reg-payment-info" class="mt-3 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-lg text-sm hidden font-bold text-center">
+                            <!-- سيتم عرض معلومات الدفع هنا برمجياً -->
+                        </div>
                     </div>
                     <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-lg mt-6 transition-colors">
                         إرسال طلب الاشتراك
@@ -355,11 +350,29 @@
             else { customInput.classList.add('hidden'); customInput.required = false; }
         };
 
+        window.showPaymentInfo = (method) => {
+            const infoDiv = document.getElementById('reg-payment-info');
+            infoDiv.classList.remove('hidden');
+            if(method === 'muscat') infoDiv.innerHTML = 'رقم حساب بنك مسقط<br><span class="text-xl block mt-1" dir="ltr">0367014374790018</span>';
+            else if(method === 'nizwa') infoDiv.innerHTML = 'رقم حساب بنك نزوى<br><span class="text-xl block mt-1" dir="ltr">00910107664001</span>';
+            else if(method === 'phone') infoDiv.innerHTML = 'التحويل برقم الهاتف (باسم علي)<br><span class="text-xl block mt-1" dir="ltr">99219505</span>';
+            else if(method === 'cash') infoDiv.innerHTML = 'الدفع نقداً<br><span class="text-sm block mt-1 font-normal">يرجى التواصل مع أحد أعضاء الإدارة لتسليم المبلغ</span>';
+            else infoDiv.classList.add('hidden');
+        };
+
         const getPaymentMethodLabel = (method) => {
             if(method === 'muscat') return '<span class="text-red-600 font-bold">بنك مسقط</span>';
             if(method === 'nizwa') return '<span class="text-purple-700 font-bold">بنك نزوى</span>';
             if(method === 'phone') return '<span class="text-blue-600 font-bold">تحويل هاتف</span>';
+            if(method === 'cash') return '<span class="text-emerald-600 font-bold">نقداً</span>';
             return '<span class="text-gray-500">غير محدد</span>';
+        };
+
+        const getPaymentMessage = (method) => {
+            if (method === 'cash') {
+                return `\n\n📌 *تنبيه هام:* طريقة الدفع المسجلة هي (الدفع نقداً). يرجى التنسيق مع أحد أعضاء الإدارة لتسليم المبلغ.`;
+            }
+            return `\n\n📌 *تنبيه هام:* يرجى إرسال إيصال الدفع (سكرين شوت) إلى نفس رقم هاتف التحويل أدناه.\n🏦 بنك مسقط: 0367014374790018\n🏦 بنك نزوى: 00910107664001\n📱 تحويل بالهاتف: 99219505 (باسم علي)`;
         };
 
         const sendWhatsApp = (phone, message) => {
@@ -403,7 +416,7 @@
             `;
             targetUsers.forEach(u => {
                 const isPaid = u.payments && u.payments[month];
-                const pMethodLabel = u.paymentMethod === 'muscat' ? 'بنك مسقط' : (u.paymentMethod === 'nizwa' ? 'بنك نزوى' : (u.paymentMethod === 'phone' ? 'تحويل هاتف' : 'غير محدد'));
+                const pMethodLabel = u.paymentMethod === 'muscat' ? 'بنك مسقط' : (u.paymentMethod === 'nizwa' ? 'بنك نزوى' : (u.paymentMethod === 'phone' ? 'تحويل هاتف' : (u.paymentMethod === 'cash' ? 'نقداً' : 'غير محدد')));
                 html += `<tr><td style="padding: 10px; border: 1px solid #000;">${u.name}</td><td style="padding: 10px; border: 1px solid #000;" dir="ltr">${u.phone}</td><td style="padding: 10px; border: 1px solid #000; font-weight: bold;">${u.package} ريال</td><td style="padding: 10px; border: 1px solid #000;">${u.type==='monthly'?'شهري':'سنوي'}</td><td style="padding: 10px; border: 1px solid #000;">${pMethodLabel}</td><td style="padding: 10px; border: 1px solid #000; font-weight: bold; color: ${isPaid ? '#047857' : '#dc2626'};">${isPaid ? 'تم الدفع ✓' : 'لم يدفع ✗'}</td></tr>`;
             });
             html += `</tbody></table></div>`;
@@ -417,7 +430,6 @@
             document.getElementById(`view-${viewName}`).classList.remove('hidden');
             renderNav();
             
-            if(viewName === 'home') renderHomeMembers();
             if(viewName === 'admin') renderAdmin();
             if(viewName === 'user') renderUserDash();
             if(viewName === 'public') renderPublicPortal();
@@ -448,7 +460,6 @@
 
                 onSnapshot(collection(db, getColPath('volunteers')), (snapshot) => {
                     state.volunteers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    if(state.view === 'home') renderHomeMembers();
                     if(state.view === 'admin') renderAdmin();
                     if(state.view === 'user') renderUserDash();
                     if(state.view === 'public') renderPublicPortal();
@@ -481,7 +492,14 @@
             const btn = e.target.querySelector('button'); btn.disabled = true; btn.innerHTML = 'جاري الإرسال...';
             let selectedPkg = document.getElementById('reg-package').value;
             if (selectedPkg === 'custom') selectedPkg = document.getElementById('reg-custom-package').value;
-            let paymentMethod = document.getElementById('reg-payment-method').value;
+            
+            let paymentMethodEl = document.getElementById('reg-payment-method');
+            let paymentMethod = paymentMethodEl ? paymentMethodEl.value : '';
+            if(!paymentMethod) {
+                showModal('error', 'خطأ', 'يرجى اختيار طريقة التحويل المفضلة.');
+                btn.disabled = false; btn.innerHTML = 'إرسال طلب الاشتراك';
+                return;
+            }
 
             try {
                 await addDoc(collection(db, getColPath('volunteers')), {
@@ -490,7 +508,7 @@
                     status: 'pending', password: null, payments: {}, timestamp: Date.now()
                 });
                 document.getElementById('register-form-container').classList.add('hidden'); document.getElementById('register-success').classList.remove('hidden');
-                e.target.reset(); updatePackageOptions('reg-type', 'reg-package', 'reg-custom-package');
+                e.target.reset(); updatePackageOptions('reg-type', 'reg-package', 'reg-custom-package'); document.getElementById('reg-payment-info').classList.add('hidden');
             } catch(err) { showModal('error', 'خطأ', 'حدث خطأ. المحاولة لاحقاً.'); } 
             finally { btn.disabled = false; btn.innerHTML = 'إرسال طلب الاشتراك'; }
         };
@@ -540,7 +558,7 @@
                     pendingUsers.forEach(u => {
                         html += `
                         <div class="bg-gray-50 p-4 rounded-lg flex flex-col md:flex-row justify-between items-center gap-4 border border-gray-200">
-                            <div><h4 class="font-bold text-lg">${u.name}</h4><p class="text-sm text-gray-600">هاتف: <span dir="ltr">${u.phone}</span> | الباقة: ${u.package} ريال (${u.type === 'monthly' ? 'شهري' : 'سنوي'})</p></div>
+                            <div><h4 class="font-bold text-lg">${u.name}</h4><p class="text-sm text-gray-600">هاتف: <span dir="ltr">${u.phone}</span> | الباقة: ${u.package} ريال (${u.type === 'monthly' ? 'شهري' : 'سنوي'}) | <span class="font-bold">${getPaymentMethodLabel(u.paymentMethod)}</span></p></div>
                             <div class="flex gap-2 w-full md:w-auto">
                                 <button onclick="adminAction('approve', '${u.id}')" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-1"><i class="fas fa-check-circle"></i> قبول</button>
                                 <button onclick="adminAction('reject', '${u.id}')" class="bg-red-100 hover:bg-red-200 text-red-700 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-1"><i class="fas fa-times-circle"></i> رفض</button>
@@ -559,7 +577,7 @@
                         <input required type="tel" id="new-mem-phone" placeholder="رقم الهاتف" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500" />
                         <select id="new-mem-type" onchange="updatePackageOptions('new-mem-type', 'new-mem-pkg', 'new-mem-custom-pkg')" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="monthly">شهري</option><option value="yearly">سنوي</option></select>
                         <div><select id="new-mem-pkg" onchange="handlePackageChange('new-mem-pkg', 'new-mem-custom-pkg')" class="w-full p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="1">1 ريال</option><option value="2">2 ريال</option><option value="3">3 ريال</option><option value="5">5 ريال</option><option value="10">10 ريال</option><option value="20">20 ريال</option><option value="50">50 ريال</option><option value="custom">مبلغ آخر...</option></select><input type="number" id="new-mem-custom-pkg" class="hidden w-full p-3 mt-2 border border-emerald-300 rounded-lg outline-none focus:border-emerald-500" placeholder="أدخل المبلغ" min="1" /></div>
-                        <select id="new-mem-payment" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500 md:col-span-2"><option value="muscat">بنك مسقط</option><option value="nizwa">بنك نزوى</option><option value="phone">تحويل هاتف</option></select>
+                        <select id="new-mem-payment" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500 md:col-span-2"><option value="muscat">بنك مسقط</option><option value="nizwa">بنك نزوى</option><option value="phone">تحويل هاتف</option><option value="cash">نقداً لأحد أعضاء الصندوق</option></select>
                         <button type="submit" class="md:col-span-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-bold">إضافة وإرسال عبر واتساب</button>
                     </form>
                 </div>
@@ -609,6 +627,7 @@
                             <option value="muscat" ${state.paymentMethodFilter === 'muscat' ? 'selected' : ''}>بنك مسقط</option>
                             <option value="nizwa" ${state.paymentMethodFilter === 'nizwa' ? 'selected' : ''}>بنك نزوى</option>
                             <option value="phone" ${state.paymentMethodFilter === 'phone' ? 'selected' : ''}>تحويل الهاتف</option>
+                            <option value="cash" ${state.paymentMethodFilter === 'cash' ? 'selected' : ''}>الدفع نقداً</option>
                         </select>
                         <button onclick="adminAction('markAllPaid')" class="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 px-4 py-2 rounded-lg text-sm font-bold print:hidden">تعيين الكل كـ مدفوع</button>
                     </div>
@@ -672,13 +691,12 @@
 
         window.adminAction = async (action, arg1, arg2, arg3) => {
             const getU = (id) => state.volunteers.find(u => u.id === id);
-            const paymentInfoMsg = `\n\n📌 *تنبيه هام:* يرجى إرسال إيصال الدفع (سكرين شوت) إلى نفس رقم هاتف التحويل أدناه.\n🏦 بنك مسقط: 0367014374790018\n🏦 بنك نزوى: 00910107664001\n📱 تحويل بالهاتف: 99219505 (باسم علي)`;
 
             try {
                 if(action === 'approve') {
                     const u = getU(arg1); const pass = Math.floor(1000 + Math.random() * 9000).toString();
                     await updateDoc(doc(db, getColPath('volunteers'), u.id), { status: 'approved', password: pass });
-                    sendWhatsApp(u.phone, `مرحباً ${u.name}،\n\nتم قبول اشتراكك في صندوق الأعمال التطوعية 🌿\nالباقة: ${u.package} ريال (${u.type==='monthly'?'شهري':'سنوي'})${paymentInfoMsg}\n\nرابط الموقع: https://akmoman.github.io/sondok/\nرقم الهاتف: ${u.phone}\nالرقم السري: ${pass}`);
+                    sendWhatsApp(u.phone, `مرحباً ${u.name}،\n\nتم قبول اشتراكك في صندوق الأعمال التطوعية 🌿\nالباقة: ${u.package} ريال (${u.type==='monthly'?'شهري':'سنوي'})\nطريقة التحويل المسجلة: ${getPaymentMethodLabel(u.paymentMethod).replace(/<[^>]*>?/gm, '')}${getPaymentMessage(u.paymentMethod)}\n\nرابط الموقع: https://akmoman.github.io/sondok/\nرقم الهاتف: ${u.phone}\nالرقم السري: ${pass}`);
                     showModal('success', 'تم القبول', 'تم قبول المشترك.');
                 }
                 else if (action === 'reject' || action === 'delete') {
@@ -690,7 +708,7 @@
                     let paymentMethod = document.getElementById('new-mem-payment').value;
                     const data = { name: document.getElementById('new-mem-name').value, phone: document.getElementById('new-mem-phone').value, type: document.getElementById('new-mem-type').value, package: selectedPkg, paymentMethod: paymentMethod, status: 'approved', password: pass, payments: {}, timestamp: Date.now() };
                     await addDoc(collection(db, getColPath('volunteers')), data);
-                    sendWhatsApp(data.phone, `مرحباً ${data.name}،\n\nتم إضافتك في صندوق الأعمال التطوعية 🌿\nالباقة: ${data.package} ريال (${data.type==='monthly'?'شهري':'سنوي'})${paymentInfoMsg}\n\nرابط الموقع: https://akmoman.github.io/sondok/\nرقم الهاتف: ${data.phone}\nالرقم السري: ${pass}`);
+                    sendWhatsApp(data.phone, `مرحباً ${data.name}،\n\nتم إضافتك في صندوق الأعمال التطوعية 🌿\nالباقة: ${data.package} ريال (${data.type==='monthly'?'شهري':'سنوي'})${getPaymentMessage(paymentMethod)}\n\nرابط الموقع: https://akmoman.github.io/sondok/\nرقم الهاتف: ${data.phone}\nالرقم السري: ${pass}`);
                     arg1.target.reset(); updatePackageOptions('new-mem-type', 'new-mem-pkg', 'new-mem-custom-pkg'); showModal('success', 'تمت الإضافة', 'تم إضافة العضو بنجاح.');
                 }
                 else if (action === 'togglePayment') {
@@ -704,7 +722,7 @@
                     });
                 }
                 else if (action === 'remind') {
-                    const u = getU(arg1); sendWhatsApp(u.phone, `مرحباً ${u.name}،\n\nنود تذكيرك بلطف بتسديد مساهمتك في صندوق الأعمال التطوعية لشهر ${state.selectedMonth}.\nمبلغ الباقة: ${u.package} ريال.${paymentInfoMsg}\n\nhttps://akmoman.github.io/sondok/`);
+                    const u = getU(arg1); sendWhatsApp(u.phone, `مرحباً ${u.name}،\n\nنود تذكيرك بلطف بتسديد مساهمتك في صندوق الأعمال التطوعية لشهر ${state.selectedMonth}.\nمبلغ الباقة: ${u.package} ريال.${getPaymentMessage(u.paymentMethod)}\n\nhttps://akmoman.github.io/sondok/`);
                 }
                 else if (action === 'newPass') {
                     const u = getU(arg1); const pass = Math.floor(1000 + Math.random() * 9000).toString();
@@ -816,25 +834,6 @@
             document.getElementById('public-challenges-list').innerHTML = state.challenges.length > 0 ? state.challenges.map(c => `
                 <div class="bg-white p-4 rounded-lg border border-red-100 shadow-sm"><h4 class="font-bold text-red-700 text-sm mb-1">${c.title}</h4><p class="text-red-600 text-xs">${c.description}</p></div>
             `).join('') : '<p class="col-span-full text-gray-500 text-sm text-center">لا توجد تحديات مدونة حالياً.</p>';
-        };
-
-        // --- Home Members Logic ---
-        const renderHomeMembers = () => {
-            if(state.view !== 'home') return;
-            const approvedUsers = state.volunteers.filter(u => u.status === 'approved');
-            
-            const countEl = document.getElementById('home-members-count');
-            if(countEl) countEl.textContent = approvedUsers.length;
-            
-            const listContainer = document.getElementById('home-members-list');
-            if(!listContainer) return;
-
-            listContainer.innerHTML = approvedUsers.length > 0 ? approvedUsers.map(u => `
-                <div class="border border-emerald-100 bg-white p-4 rounded-xl flex items-center gap-4 shadow-sm hover:shadow-md transition-shadow">
-                    <div class="bg-emerald-50 text-emerald-600 w-12 h-12 rounded-full flex items-center justify-center font-bold text-xl shrink-0"><i class="fas fa-hand-holding-heart"></i></div>
-                    <div><h4 class="font-bold text-gray-800">${u.name}</h4><p class="text-sm text-gray-600 font-medium mt-1">باقة: <span class="text-amber-600">${u.package} ريال</span> (${u.type === 'monthly' ? 'شهري' : 'سنوي'})</p></div>
-                </div>
-            `).join('') : '<p class="col-span-full text-center text-gray-500 py-6">لا يوجد مساهمين حالياً، كن أنت الأول وصاحب المبادرة!</p>';
         };
 
         setupFirebase();
