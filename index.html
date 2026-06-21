@@ -16,6 +16,22 @@
         body { font-family: 'Cairo', sans-serif; }
         .tab-btn { border-right: 4px solid transparent; transition: all 0.2s ease; }
         .tab-btn.active { background-color: #fffbeb; color: #d97706; font-weight: bold; border-right: 4px solid #f59e0b; }
+        
+        /* تأثير الشريط الإخباري المتحرك */
+        @keyframes ticker-rtl {
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-100%); }
+        }
+        .animate-ticker {
+            display: inline-block;
+            white-space: nowrap;
+            animation: ticker-rtl 35s linear infinite;
+            padding-right: 100vw;
+        }
+        .animate-ticker:hover {
+            animation-play-state: paused;
+        }
+
         @media print {
             body { background-color: white !important; }
             body > *:not(#print-container) { display: none !important; }
@@ -48,11 +64,18 @@
         <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2 cursor-pointer" onclick="navigate('home')">
                 <img src="https://storage.googleapis.com/akm1983/%E2%80%8F%D9%84%D9%82%D8%B7%D8%A9%20%D8%A7%D9%84%D8%B4%D8%A7%D8%B4%D8%A9%20%D9%A2%D9%A0%D9%A2%D9%A6-%D9%A0%D9%A6-%D9%A1%D9%A8%20%D9%81%D9%8A%20%D9%A9.%D9%A3%D9%A0.%D9%A2%D9%A2%C2%A0%D9%85.png" alt="شعار الصندوق" class="h-10 w-auto object-contain rounded">
-                <span class="font-bold text-xl text-emerald-800">صندوق الأعمال</span>
+                <span class="font-bold text-xl text-emerald-800">صندوق الأعمال التطوعية</span>
             </div>
             <div id="nav-actions" class="flex items-center gap-4"></div>
         </div>
     </nav>
+
+    <!-- News Ticker -->
+    <div id="news-ticker-container" class="bg-emerald-700 text-amber-300 text-sm py-2 overflow-hidden relative hidden print:hidden border-b border-emerald-800 shadow-inner">
+        <div id="news-ticker-content" class="animate-ticker font-bold tracking-wide">
+            <!-- سيتم حقن الأخبار هنا برمجياً -->
+        </div>
+    </div>
 
     <!-- Main Content -->
     <main class="max-w-6xl mx-auto px-4 py-8 flex-1 print:p-0 w-full" id="main-content">
@@ -203,13 +226,11 @@
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div class="md:col-span-2 space-y-6">
-                    <!-- Voting and Polls Section -->
                     <div id="voting-section-container" class="bg-gradient-to-br from-indigo-50 to-purple-50 p-6 rounded-xl shadow-sm border border-indigo-100 hidden">
                         <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-indigo-800"><i class="fas fa-vote-yea"></i> رأيك يهمنا (التصويتات)</h3>
                         <div id="user-polls-list" class="space-y-4"></div>
                     </div>
 
-                    <!-- Suggestions Box -->
                     <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
                         <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-gray-800"><i class="fas fa-lightbulb text-amber-500"></i> صندوق المقترحات للإدارة</h3>
                         <form onsubmit="userAction('submitSuggestion', event)" class="space-y-3">
@@ -237,7 +258,6 @@
                 </div>
             </div>
 
-            <!-- قائمة المساهمين تظهر للمشتركين -->
             <div class="bg-emerald-50/50 p-6 rounded-xl shadow-sm border border-emerald-100 mt-8">
                 <h3 class="font-bold text-gray-800 text-2xl mb-6 text-center">شركاء الأجر والمساهمون معنا</h3>
                 <div id="user-members-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
@@ -254,7 +274,7 @@
                 </button>
             </div>
 
-            <!-- Public Members (Moved to Top) -->
+            <!-- Public Members -->
             <div class="bg-emerald-50/50 p-6 rounded-xl shadow-sm border border-emerald-100">
                 <h3 class="font-bold text-gray-800 text-2xl mb-6 text-center">شركاء الأجر والمساهمون (<span id="public-members-count" class="text-amber-600">0</span>)</h3>
                 <div id="public-members-list" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
@@ -304,7 +324,6 @@
             measurementId: "G-XBJH9JX7F8"
         };
         
-        // منع أي خطأ برمجي عند قراءة الإعدادات
         let firebaseConfig = userProvidedConfig;
         try {
             if (typeof __firebase_config !== 'undefined' && __firebase_config) {
@@ -473,6 +492,28 @@
         };
 
         window.navigate = (viewName) => {
+            if (viewName === 'login') {
+                const credsStr = localStorage.getItem('sondok_creds');
+                if (credsStr) {
+                    try {
+                        const { phone, pass } = JSON.parse(credsStr);
+                        document.getElementById('log-phone').value = phone;
+                        document.getElementById('log-pass').value = pass;
+                        
+                        if (phone === 'admin' && pass === 'admin') {
+                            state.user = { role: 'admin', name: 'مدير النظام' };
+                            viewName = 'admin';
+                        } else {
+                            const user = state.volunteers.find(u => u.phone === phone && u.password === pass && u.status === 'approved');
+                            if (user) {
+                                state.user = { role: 'user', ...user };
+                                viewName = 'user';
+                            }
+                        }
+                    } catch(e) {}
+                }
+            }
+
             state.view = viewName;
             el.views.forEach(v => v.classList.add('hidden'));
             document.getElementById(`view-${viewName}`).classList.remove('hidden');
@@ -499,29 +540,25 @@
             el.navActions.innerHTML = html;
         };
 
+        const renderTicker = () => {
+            const publicNews = state.news.filter(n => n.visibility !== 'private');
+            const tickerContainer = document.getElementById('news-ticker-container');
+            const tickerContent = document.getElementById('news-ticker-content');
+            
+            if (publicNews.length > 0) {
+                tickerContainer.classList.remove('hidden');
+                // دمج عناوين الأخبار مع فاصل بينهم
+                const newsString = publicNews.map(n => `<i class="fas fa-bolt text-white ml-1"></i> ${n.title}`).join(' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ');
+                tickerContent.innerHTML = newsString;
+            } else {
+                tickerContainer.classList.add('hidden');
+            }
+        };
+
         window.logout = () => { 
             state.user = null; 
             localStorage.removeItem('sondok_creds');
             navigate('home'); 
-        };
-
-        window.autoLogin = () => {
-            const credsStr = localStorage.getItem('sondok_creds');
-            if (credsStr) {
-                try {
-                    const { phone, pass } = JSON.parse(credsStr);
-                    if (phone === 'admin' && pass === 'admin') {
-                        state.user = { role: 'admin', name: 'مدير النظام' };
-                        navigate('admin');
-                        return;
-                    }
-                    const user = state.volunteers.find(u => u.phone === phone && u.password === pass && u.status === 'approved');
-                    if (user) { 
-                        state.user = { role: 'user', ...user }; 
-                        navigate('user'); 
-                    }
-                } catch(e) {}
-            }
         };
 
         const setupFirebase = async () => {
@@ -540,13 +577,14 @@
 
                 onSnapshot(collection(db, getColPath('volunteers')), (snapshot) => {
                     state.volunteers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                    if (initialLoad) { initialLoad = false; autoLogin(); }
+                    if (initialLoad) { initialLoad = false; }
                     renderAll();
                     const pendingEl = document.getElementById('count-pending');
                     if(pendingEl) pendingEl.textContent = state.volunteers.filter(v=>v.status==='pending').length;
                 });
                 onSnapshot(collection(db, getColPath('news')), (snapshot) => {
                     state.news = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })).sort((a,b) => b.timestamp - a.timestamp);
+                    renderTicker();
                     renderAll();
                 });
                 onSnapshot(collection(db, getColPath('projects')), (snapshot) => {
@@ -653,7 +691,7 @@
                         <input required type="tel" id="new-mem-phone" placeholder="رقم الهاتف" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500" />
                         <select id="new-mem-type" onchange="updatePackageOptions('new-mem-type', 'new-mem-pkg', 'new-mem-custom-pkg')" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="monthly">شهري</option><option value="yearly">سنوي</option></select>
                         <div><select id="new-mem-pkg" onchange="handlePackageChange('new-mem-pkg', 'new-mem-custom-pkg')" class="w-full p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="1">1 ريال</option><option value="2">2 ريال</option><option value="3">3 ريال</option><option value="5">5 ريال</option><option value="10">10 ريال</option><option value="20">20 ريال</option><option value="50">50 ريال</option><option value="custom">مبلغ آخر...</option></select><input type="number" id="new-mem-custom-pkg" class="hidden w-full p-3 mt-2 border border-emerald-300 rounded-lg outline-none focus:border-emerald-500" placeholder="أدخل المبلغ" min="1" /></div>
-                        <select id="new-mem-payment" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="muscat">بن مسقط</option><option value="nizwa">بنك نزوى</option><option value="phone">تحويل هاتف</option><option value="cash">نقداً لأحد أعضاء الصندوق</option></select>
+                        <select id="new-mem-payment" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="muscat">بنك مسقط</option><option value="nizwa">بنك نزوى</option><option value="phone">تحويل هاتف</option><option value="cash">نقداً لأحد أعضاء الصندوق</option></select>
                         <select id="new-mem-privacy" class="p-3 border border-gray-200 rounded-lg outline-none focus:border-emerald-500"><option value="public">ظهور الاسم للعامة</option><option value="anonymous">فاعل خير</option></select>
                         <button type="submit" class="md:col-span-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-bold">إضافة وإرسال عبر واتساب</button>
                     </form>
@@ -842,7 +880,7 @@
                 if(action === 'approve') {
                     const u = getU(arg1); const pass = Math.floor(1000 + Math.random() * 9000).toString();
                     await updateDoc(doc(db, getColPath('volunteers'), u.id), { status: 'approved', password: pass });
-                    sendWhatsApp(u.phone, `مرحباً ${u.name}،\n\nتم قبول اشتراكك في صندوق الأعمال التطوعية 🌿\nالباقة: ${u.package} ريال (${u.type==='monthly'?'شهري':'سنوي'})\nطريقة التحويل المسجلة: ${getPaymentMethodLabel(u.paymentMethod).replace(/<[^>]*>?/gm, '')}${getPaymentMessage(u.paymentMethod)}\n\nرابط الموقع: https://akmoman.github.io/sondok/\nرقم الهاتف: ${u.phone}\nالرقم السري: ${pass}`);
+                    sendWhatsApp(u.phone, `السلام عليكم ورحمة الله وبركاته،\nالأخ/الأخت الكريم/ة: ${u.name}\n\nنسأل الله أن يبارك في عمرك وعملك وأهلك ومالك، وأن يخلف عليك أضعافاً مضاعفة، ويجعل مساهمتك في ميزان حسناتك. 🌿\n\nيسرنا إعلامك بأنه تم تفعيل اشتراكك بنجاح في صندوق الأعمال التطوعية.\n\n📌 تفاصيل الاشتراك:\n- الباقة: ${u.package} ريال (${u.type==='monthly'?'شهري':'سنوي'})\n- طريقة الدفع المسجلة: ${getPaymentMethodLabel(u.paymentMethod).replace(/<[^>]*>?/gm, '')}${getPaymentMessage(u.paymentMethod)}\n\nللدخول إلى حسابك ومتابعة مشاريع الصندوق:\n🌐 رابط الموقع: https://akmoman.github.io/sondok/\n📱 رقم الهاتف: ${u.phone}\n🔑 الرقم السري: ${pass}`);
                     showModal('success', 'تم القبول', 'تم قبول المشترك.');
                 }
                 else if (action === 'reject' || action === 'delete') {
@@ -861,7 +899,7 @@
                     let privacyPref = document.getElementById('new-mem-privacy').value;
                     const data = { name: document.getElementById('new-mem-name').value, phone: document.getElementById('new-mem-phone').value, type: document.getElementById('new-mem-type').value, package: selectedPkg, paymentMethod: paymentMethod, privacy: privacyPref, status: 'approved', password: pass, payments: {}, timestamp: Date.now() };
                     await addDoc(collection(db, getColPath('volunteers')), data);
-                    sendWhatsApp(data.phone, `مرحباً ${data.name}،\n\nتم إضافتك في صندوق الأعمال التطوعية 🌿\nالباقة: ${data.package} ريال (${data.type==='monthly'?'شهري':'سنوي'})${getPaymentMessage(paymentMethod)}\n\nرابط الموقع: https://akmoman.github.io/sondok/\nرقم الهاتف: ${data.phone}\nالرقم السري: ${pass}`);
+                    sendWhatsApp(data.phone, `السلام عليكم ورحمة الله وبركاته،\nالأخ/الأخت الكريم/ة: ${data.name}\n\nنسأل الله أن يبارك في عمرك وعملك وأهلك ومالك، وأن يخلف عليك أضعافاً مضاعفة، ويجعل مساهمتك في ميزان حسناتك. 🌿\n\nيسعدنا انضمامك وتم تسجيل اشتراكك بنجاح في صندوق الأعمال التطوعية.\n\n📌 تفاصيل الاشتراك:\n- الباقة: ${data.package} ريال (${data.type==='monthly'?'شهري':'سنوي'})\n- طريقة الدفع المسجلة: ${getPaymentMethodLabel(paymentMethod).replace(/<[^>]*>?/gm, '')}${getPaymentMessage(paymentMethod)}\n\nللدخول إلى حسابك ومتابعة مشاريع الصندوق:\n🌐 رابط الموقع: https://akmoman.github.io/sondok/\n📱 رقم الهاتف: ${data.phone}\n🔑 الرقم السري: ${pass}`);
                     arg1.target.reset(); updatePackageOptions('new-mem-type', 'new-mem-pkg', 'new-mem-custom-pkg'); showModal('success', 'تمت الإضافة', 'تم إضافة العضو بنجاح.');
                 }
                 else if (action === 'togglePayment') {
@@ -875,7 +913,7 @@
                     });
                 }
                 else if (action === 'remind') {
-                    const u = getU(arg1); sendWhatsApp(u.phone, `مرحباً ${u.name}،\n\nنود تذكيرك بلطف بتسديد مساهمتك في صندوق الأعمال التطوعية لشهر ${state.selectedMonth}.\nمبلغ الباقة: ${u.package} ريال.${getPaymentMessage(u.paymentMethod)}\n\nhttps://akmoman.github.io/sondok/`);
+                    const u = getU(arg1); sendWhatsApp(u.phone, `السلام عليكم ورحمة الله وبركاته،\nالأخ/الأخت الكريم/ة: ${u.name}\n\nنسأل الله أن يبارك فيك ويتقبل منك صالح الأعمال. 🌿\n\nنود تذكيرك بلطف بتسديد مساهمتك في صندوق الأعمال التطوعية لشهر ${state.selectedMonth}.\n- مبلغ الباقة: ${u.package} ريال.${getPaymentMessage(u.paymentMethod)}\n\nجزاك الله خيراً وبارك في مالك.\nhttps://akmoman.github.io/sondok/`);
                 }
                 else if (action === 'newPass') {
                     const u = getU(arg1); const pass = Math.floor(1000 + Math.random() * 9000).toString();
