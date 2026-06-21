@@ -17,16 +17,16 @@
         .tab-btn { border-right: 4px solid transparent; transition: all 0.2s ease; }
         .tab-btn.active { background-color: #fffbeb; color: #d97706; font-weight: bold; border-right: 4px solid #f59e0b; }
         
-        /* تأثير الشريط الإخباري المتحرك */
-        @keyframes ticker-rtl {
-            0% { transform: translateX(100vw); }
-            100% { transform: translateX(-100%); }
+        /* تأثير الشريط الإخباري المتحرك من اليسار إلى اليمين */
+        @keyframes ticker-ltr {
+            0% { transform: translateX(-100vw); }
+            100% { transform: translateX(100%); }
         }
         .animate-ticker {
             display: inline-block;
             white-space: nowrap;
-            animation: ticker-rtl 35s linear infinite;
-            padding-right: 100vw;
+            animation: ticker-ltr 30s linear infinite;
+            padding-left: 2rem;
         }
         .animate-ticker:hover {
             animation-play-state: paused;
@@ -71,7 +71,7 @@
     </nav>
 
     <!-- News Ticker -->
-    <div id="news-ticker-container" class="bg-emerald-700 text-amber-300 text-sm py-2 overflow-hidden relative hidden print:hidden border-b border-emerald-800 shadow-inner">
+    <div id="news-ticker-container" class="bg-emerald-800 text-amber-300 text-base py-2.5 overflow-hidden relative hidden print:hidden border-b-2 border-emerald-900 shadow-md">
         <div id="news-ticker-content" class="animate-ticker font-bold tracking-wide">
             <!-- سيتم حقن الأخبار هنا برمجياً -->
         </div>
